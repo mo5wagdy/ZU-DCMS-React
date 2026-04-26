@@ -1,0 +1,144 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ZU-DCMS Design System
+   Deep University Blue + Gold accents
+   All colors HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 210 33% 97%;          /* #F8FAFC */
+    --foreground: 217 33% 17%;          /* #1E293B */
+
+    --card: 0 0% 100%;
+    --card-foreground: 217 33% 17%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 217 33% 17%;
+
+    /* Deep University Blue #1B3A6B */
+    --primary: 215 59% 26%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 215 59% 38%;
+
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 215 59% 26%;
+
+    --muted: 210 30% 94%;
+    --muted-foreground: 215 16% 42%;     /* #64748B */
+
+    /* Gold accent #C9A84C */
+    --accent: 44 53% 54%;
+    --accent-foreground: 0 0% 100%;
+    --accent-soft: 44 70% 92%;
+
+    --destructive: 0 84% 60%;            /* #EF4444 */
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 71% 45%;              /* #22C55E */
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;               /* #F59E0B */
+    --warning-foreground: 0 0% 100%;
+
+    --info: 215 59% 38%;
+    --info-foreground: 0 0% 100%;
+
+    --border: 214 28% 88%;
+    --input: 214 28% 88%;
+    --ring: 215 59% 26%;
+
+    --radius: 0.875rem;
+
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(215 59% 26%) 0%, hsl(215 59% 38%) 100%);
+    --gradient-gold: linear-gradient(135deg, hsl(44 53% 54%) 0%, hsl(44 65% 65%) 100%);
+    --gradient-soft: linear-gradient(180deg, hsl(210 33% 99%) 0%, hsl(210 33% 95%) 100%);
+
+    /* Shadows */
+    --shadow-card: 0 1px 3px 0 hsl(215 59% 26% / 0.06), 0 1px 2px -1px hsl(215 59% 26% / 0.04);
+    --shadow-elevated: 0 10px 30px -12px hsl(215 59% 26% / 0.18);
+    --shadow-glow: 0 0 0 1px hsl(44 53% 54% / 0.15), 0 8px 24px -8px hsl(44 53% 54% / 0.35);
+
+    --transition-base: all 0.2s ease;
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 217 33% 17%;
+    --sidebar-primary: 215 59% 26%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 40% 96%;
+    --sidebar-accent-foreground: 215 59% 26%;
+    --sidebar-border: 214 28% 88%;
+    --sidebar-ring: 215 59% 26%;
+  }
+
+  .dark {
+    --background: 217 33% 8%;
+    --foreground: 210 40% 98%;
+    --card: 217 33% 11%;
+    --card-foreground: 210 40% 98%;
+    --popover: 217 33% 11%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 215 70% 60%;
+    --primary-foreground: 217 33% 8%;
+    --primary-glow: 215 70% 70%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 44 53% 54%;
+    --accent-foreground: 217 33% 8%;
+    --accent-soft: 44 30% 25%;
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 210 40% 98%;
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    --border: 217 33% 20%;
+    --input: 217 33% 20%;
+    --ring: 215 70% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html[dir="rtl"] body {
+    font-family: "Cairo", system-ui, sans-serif;
+  }
+
+  html[dir="ltr"] body {
+    font-family: "Inter", system-ui, sans-serif;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "ss01", "cv11";
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold tracking-tight;
+  }
+}
+
+@layer components {
+  .card-hover {
+    @apply transition-all duration-200 hover:shadow-[var(--shadow-elevated)] hover:-translate-y-0.5;
+  }
+  .gradient-hero {
+    background: var(--gradient-hero);
+  }
+  .gradient-gold {
+    background: var(--gradient-gold);
+  }
+}
+
+/* RTL fixes for icons */
+html[dir="rtl"] .rtl-flip {
+  transform: scaleX(-1);
+}
