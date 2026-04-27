@@ -11,6 +11,7 @@ import { Breadcrumbs } from "@/components/shared/Breadcrumbs";
 import { sessionApi } from "@/api/session.api";
 import { ChronicConditionList, hasFlag } from "@/utils/enum";
 import { useFetch } from "@/hooks/useFetch";
+import { useAuthStore } from "@/store/auth.store";
 import type { BookingForDiagnosisDto } from "@/types";
 
 /**
@@ -23,10 +24,15 @@ export default function SessionPatients() {
   const { sessionId } = useParams<{ sessionId: string }>();
   const id = Number(sessionId);
 
-  // Backend missing patients endpoint
+  const { userId } = useAuthStore((s) => s);
+
   const { data: patients, loading, error } = useFetch<BookingForDiagnosisDto[]>(
-    () => Promise.resolve([]),
-    [id]
+    async () => {
+      if (!id || !userId) return [];
+      const res = await sessionApi.patients(id, userId);
+      return res.items || [];
+    },
+    [id, userId]
   );
 
   return (

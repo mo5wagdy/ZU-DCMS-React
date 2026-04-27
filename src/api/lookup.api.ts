@@ -1,5 +1,5 @@
 import { api, call } from "./axios";
-import type { ApiResponse, ClinicDto, DiagnosisTypeDto } from "@/types";
+import type { ApiResponse, ClinicDto, DiagnosisTypeDto, ProcedureDto } from "@/types";
 
 export const lookupApi = {
   getClinics: () =>
@@ -7,7 +7,14 @@ export const lookupApi = {
     
   getDiagnosisTypes: (clinicId?: number) =>
     call<DiagnosisTypeDto[]>(
-      api.get<ApiResponse<DiagnosisTypeDto[]>>("/lookups/diagnosis-types", {
+      api.get<ApiResponse<DiagnosisTypeDto[]>>("/diagnosis/types", {
+        params: { clinicId },
+      }) as any
+    ),
+    
+  getProcedures: (clinicId?: number) =>
+    call<ProcedureDto[]>(
+      api.get<ApiResponse<ProcedureDto[]>>("/diagnosis/procedures", {
         params: { clinicId },
       }) as any
     ),

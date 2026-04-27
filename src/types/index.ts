@@ -152,8 +152,16 @@ export interface DiagnosisRecordDto {
 
 export interface DiagnosisTypeDto {
   id: number;
-  name: string;
-  clinicId: number;
+  code: string;
+  nameAr: string;
+  nameEn: string;
+}
+
+export interface ProcedureDto {
+  id: number;
+  code: string;
+  nameAr: string;
+  nameEn: string;
 }
 
 export interface BookingForDiagnosisDto {
@@ -186,6 +194,7 @@ export interface StudentPriorityDto {
 export interface CaseAssignmentDto {
   id: number;
   patientName: string;
+  clinicId: number;
   clinicName: string;
   assignedByInternName: string;
   diagnosis: string;
@@ -209,6 +218,12 @@ export interface AddSessionProgressCommand {
   procedureIds: number[];
   isCompleted: boolean;
   hasFollowUp: boolean;
+  notes?: string;
+}
+
+export interface ReviewCaseDto {
+  caseAssignmentId: number;
+  isApproved: boolean;
   notes?: string;
 }
 

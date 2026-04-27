@@ -31,10 +31,11 @@ export default function MyCases() {
   const [filter, setFilter] = useState<Filter>("active");
   const [search, setSearch] = useState("");
 
-  // Skip the fetch until we know which student to load
-  // Backend missing byStudent endpoint
   const { data: cases, loading, error } = useFetch<CaseAssignmentDto[]>(
-    () => Promise.resolve([]),
+    async () => {
+      if (!student?.id) return [];
+      return await caseApi.studentCases(student.id);
+    },
     [student?.id]
   );
 

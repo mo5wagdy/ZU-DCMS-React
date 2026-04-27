@@ -4,6 +4,7 @@ import type {
   AvailableSlotDto,
   BookingForDiagnosisDto,
   SessionDto,
+  PagedResult,
 } from "@/types";
 
 export const sessionApi = {
@@ -30,6 +31,12 @@ export const sessionApi = {
       api.post<ApiResponse<SessionDto[]>>("/sessions/generate", {
         startDate,
         endDate,
+      }) as any
+    ),
+  patients: (sessionId: number, internDoctorId: string) =>
+    call<PagedResult<BookingForDiagnosisDto>>(
+      api.get<ApiResponse<PagedResult<BookingForDiagnosisDto>>>("/sessions/patients", {
+        params: { sessionId, internDoctorId },
       }) as any
     ),
 };

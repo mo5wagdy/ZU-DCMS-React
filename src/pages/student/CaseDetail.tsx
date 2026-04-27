@@ -50,15 +50,11 @@ import { ListSkeleton } from "@/components/shared/Skeletons";
 import { toast } from "@/hooks/use-toast";
 import { caseApi } from "@/api/case.api";
 
-export interface ProcedureDto {
-  id: number;
-  name: string;
-  clinicId: number;
-}
+
 import { CaseStatus } from "@/utils/enum";
 import { formatDate } from "@/utils/format";
 import { useUIStore } from "@/store/ui.store";
-import type { CaseAssignmentDto, CaseSessionDto } from "@/types";
+import type { CaseAssignmentDto, CaseSessionDto, ProcedureDto } from "@/types";
 
 export default function CaseDetail() {
   const { t } = useTranslation();
@@ -329,7 +325,7 @@ function AddSessionDialog({
   caseAssignment: CaseAssignmentDto;
   onSuccess: () => void;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [procedures, setProcedures] = useState<ProcedureDto[]>([]);
   const [selected, setSelected] = useState<number[]>([]);
   const [isCompleted, setIsCompleted] = useState(false);
@@ -341,12 +337,27 @@ function AddSessionDialog({
 
   useEffect(() => {
     if (!open) return;
+    let isMounted = true;
     setLoadingProcs(true);
     setError(null);
-    // Procedures endpoint does not exist on backend
-    setLoadingProcs(false); // removed lookupApi.procedures()
-    setProcedures([]);
-  }, [open]);
+
+    import("@/api/lookup.api").then(({ lookupApi }) => {
+      lookupApi.getProcedures(caseAssignment.clinicId)
+        .then((data) => {
+          if (isMounted) setProcedures(data ?? []);
+        })
+        .catch((e) => {
+          if (isMounted) setError(e.message);
+        })
+        .finally(() => {
+          if (isMounted) setLoadingProcs(false);
+        });
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [open, caseAssignment.clinicId]);
 
   // Reset on close
   useEffect(() => {
@@ -419,7 +430,7 @@ function AddSessionDialog({
                       checked={selected.includes(p.id)}
                       onCheckedChange={() => toggle(p.id)}
                     />
-                    <span className="text-sm">{p.name}</span>
+                    <span className="text-sm">{p.nameAr}</span>
                   </label>
                 ))}
               </div>

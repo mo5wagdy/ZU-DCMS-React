@@ -47,7 +47,7 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 export default function DiagnosePatient() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { bookingId } = useParams<{ bookingId: string }>();
 
@@ -177,7 +177,7 @@ export default function DiagnosePatient() {
                   <SelectContent>
                     {diagnosisTypes.map((d) => (
                       <SelectItem key={d.id} value={String(d.id)}>
-                        {d.name}
+                        {i18n.language === "en" ? d.nameEn : d.nameAr}
                       </SelectItem>
                     ))}
                   </SelectContent>

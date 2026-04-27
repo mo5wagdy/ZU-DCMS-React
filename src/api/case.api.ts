@@ -5,6 +5,7 @@ import type {
   CaseAssignmentDto,
   CaseSessionDto,
   StudentProgressDto,
+  ReviewCaseDto,
 } from "@/types";
 
 export const caseApi = {
@@ -33,5 +34,15 @@ export const caseApi = {
   byId: (caseAssignmentId: number) =>
     call<CaseAssignmentDto>(
       api.get<ApiResponse<CaseAssignmentDto>>(`/cases/${caseAssignmentId}`) as any
+    ),
+  studentCases: (studentId: number) =>
+    call<CaseAssignmentDto[]>(
+      api.get<ApiResponse<CaseAssignmentDto[]>>(`/cases/student/${studentId}`) as any
+    ),
+  getReviews: (caseAssignmentId: number) =>
+    call<ReviewCaseDto[]>(
+      api.get<ApiResponse<ReviewCaseDto[]>>("/cases/reviews", {
+        params: { caseAssignmentId },
+      }) as any
     ),
 };
