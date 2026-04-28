@@ -39,6 +39,7 @@ const userSchema = z.object({
   fullName: z.string().trim().min(3, "min 3"),
   username: z.string().trim().min(3, "min 3"),
   email: z.string().trim().email("invalid"),
+  phoneNumber: z.string().trim().min(5, "required"),
   role: z.string().min(1, "required"),
   academicYear: z.coerce.number().int().min(1).max(5).optional(),
 });
@@ -261,6 +262,7 @@ function CreateUserDialog({ onCreated }: { onCreated: () => void }) {
           username: vals.username,
           fullName: vals.fullName,
           email: vals.email,
+          phoneNumber: vals.phoneNumber,
           role: vals.role,
           academicYear: showAcademicYear ? vals.academicYear : undefined,
         }
@@ -296,6 +298,9 @@ function CreateUserDialog({ onCreated }: { onCreated: () => void }) {
         </Field>
         <Field id="email" label={t("auth.email")} error={errors.email?.message}>
           <Input id="email" type="email" dir="ltr" {...register("email")} />
+        </Field>
+        <Field id="phoneNumber" label={t("auth.phone")} error={errors.phoneNumber?.message}>
+          <Input id="phoneNumber" dir="ltr" {...register("phoneNumber")} />
         </Field>
         <Field id="role" label={t("common.role")} error={errors.role?.message}>
           <Select onValueChange={(v) => setValue("role", v, { shouldValidate: true })}>

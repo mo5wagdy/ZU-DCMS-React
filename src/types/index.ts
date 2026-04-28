@@ -128,7 +128,7 @@ export interface CreateBookingDto {
 }
 
 export interface CreateBookingCommand {
-  requestingPatientId: number;
+  PatientId: number;
   dto: CreateBookingDto;
 }
 
@@ -303,6 +303,7 @@ export interface CreateUserDto {
   username: string;
   fullName: string;
   email: string;
+  phoneNumber: string;
   role: string;
   academicYear?: number;
 }

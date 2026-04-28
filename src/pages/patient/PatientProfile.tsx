@@ -18,6 +18,8 @@ import { useUIStore } from "@/store/ui.store";
 import { formatDate } from "@/utils/format";
 import { ChronicConditionList, Gender, arrayToFlags, flagsToArray } from "@/utils/enum";
 import type { PatientDto } from "@/types";
+import { Country, State } from "country-state-city";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function PatientProfile() {
   const { t } = useTranslation();
@@ -33,6 +35,8 @@ export default function PatientProfile() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
+  const [selectedCountryIso, setSelectedCountryIso] = useState<string>("");
+  const [selectedStateIso, setSelectedStateIso] = useState<string>("");
   const [conditions, setConditions] = useState<number[]>([]);
   const [otherConditions, setOtherConditions] = useState("");
 
@@ -46,7 +50,19 @@ export default function PatientProfile() {
         setPatient(p);
         setPhoneNumber(p.phoneNumber);
         setEmail(p.email || "");
-        setAddress(p.address || "");
+        const addr = p.address || "";
+        setAddress(addr);
+        const [cName, sName] = addr.split(",");
+        if (cName) {
+          const c = Country.getAllCountries().find(x => x.name === cName);
+          if (c) {
+            setSelectedCountryIso(c.isoCode);
+            if (sName) {
+              const s = State.getStatesOfCountry(c.isoCode).find(x => x.name === sName);
+              if (s) setSelectedStateIso(s.isoCode);
+            }
+          }
+        }
         setConditions(flagsToArray(p.chronicConditions, allFlags));
         setOtherConditions(p.otherConditions || "");
       })
@@ -156,13 +172,61 @@ export default function PatientProfile() {
                 <div className="mt-1 font-semibold" dir="ltr">{patient.email || "—"}</div>
               )}
             </div>
-            <div className="sm:col-span-2">
-              <Label>{t("auth.address")}</Label>
-              {editing ? (
-                <Input className="mt-1" placeholder={t("auth.addressHint") as string} value={address} onChange={(e) => setAddress(e.target.value)} />
-              ) : (
-                <div className="mt-1 font-semibold">{patient.address || "—"}</div>
-              )}
+            <div className="sm:col-span-2 grid sm:grid-cols-2 gap-4">
+              <div>
+                <Label>{t("auth.country") || "الدولة"}</Label>
+                {editing ? (
+                  <Select
+                    value={selectedCountryIso}
+                    onValueChange={(iso) => {
+                      setSelectedCountryIso(iso);
+                      setSelectedStateIso("");
+                      const c = Country.getCountryByCode(iso);
+                      if (c) setAddress(`${c.name},`);
+                      else setAddress("");
+                    }}
+                  >
+                    <SelectTrigger className="mt-1"><SelectValue placeholder="..." /></SelectTrigger>
+                    <SelectContent>
+                      {Country.getAllCountries().map((c) => (
+                        <SelectItem key={c.isoCode} value={c.isoCode}>
+                          {c.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <div className="mt-1 font-semibold">{patient.address ? patient.address.split(',')[0] : "—"}</div>
+                )}
+              </div>
+              <div>
+                <Label>{t("auth.governorate") || "المحافظة"}</Label>
+                {editing ? (
+                  <Select
+                    value={selectedStateIso}
+                    onValueChange={(iso) => {
+                      setSelectedStateIso(iso);
+                      const c = Country.getCountryByCode(selectedCountryIso);
+                      const s = State.getStateByCodeAndCountry(iso, selectedCountryIso);
+                      if (c && s) {
+                        setAddress(`${c.name},${s.name}`);
+                      }
+                    }}
+                    disabled={!selectedCountryIso}
+                  >
+                    <SelectTrigger className="mt-1"><SelectValue placeholder="..." /></SelectTrigger>
+                    <SelectContent>
+                      {selectedCountryIso && State.getStatesOfCountry(selectedCountryIso).map((s) => (
+                        <SelectItem key={s.isoCode} value={s.isoCode}>
+                          {s.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <div className="mt-1 font-semibold">{patient.address ? patient.address.split(',')[1] : "—"}</div>
+                )}
+              </div>
             </div>
           </div>
         </div>

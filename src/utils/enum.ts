@@ -18,22 +18,22 @@ export const ChronicConditionList = [
   { value: 64, key: "kidneyDisease" },
 ];
 
-export const Gender = { Male: 0, Female: 1 } as const;
+export const Gender = { Male: 1, Female: 2 } as const;
 
 export const IdentityType = {
-  NationalId: 0,
-  Passport: 1,
-  ResidencePermit: 2,
+  NationalId: 1,
+  Passport: 2,
+  ResidencePermit: 3,
 } as const;
 
-export const BookingType = { New: 0, FollowUp: 1 } as const;
+export const BookingType = { New: 1, FollowUp: 2 } as const;
 
 export const BookingStatus = {
-  Pending: 0,
-  Confirmed: 1,
-  Cancelled: 2,
-  Postponed: 3,
-  Completed: 4,
+  Pending: 1,
+  Confirmed: 2,
+  Cancelled: 3,
+  Postponed: 4,
+  Completed: 5,
 } as const;
 
 export const CaseStatus = {

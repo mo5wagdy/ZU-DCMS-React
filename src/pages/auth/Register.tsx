@@ -26,6 +26,7 @@ import { authApi } from "@/api/auth.api";
 import { useAuth } from "@/hooks/useAuth";
 import { ChronicConditionList, Gender, IdentityType, arrayToFlags } from "@/utils/enum";
 import { useRTL } from "@/hooks/useRTL";
+import { Country, State } from "country-state-city";
 
 const schema = z
   .object({
@@ -59,6 +60,9 @@ export default function Register() {
   const isRTL = useRTL();
   const [step, setStep] = useState(1);
   const [error, setError] = useState<string | null>(null);
+  
+  const [selectedCountryIso, setSelectedCountryIso] = useState<string>("EG");
+  const [selectedStateIso, setSelectedStateIso] = useState<string>("");
 
   const Prev = isRTL ? ArrowRight : ArrowLeft;
   const Next = isRTL ? ArrowLeft : ArrowRight;
@@ -170,9 +174,9 @@ export default function Register() {
                     <Select value={String(field.value)} onValueChange={(v) => field.onChange(Number(v))}>
                       <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value={String(IdentityType.NationalId)}>{t("identityType.0")}</SelectItem>
-                        <SelectItem value={String(IdentityType.Passport)}>{t("identityType.1")}</SelectItem>
-                        <SelectItem value={String(IdentityType.ResidencePermit)}>{t("identityType.2")}</SelectItem>
+                        <SelectItem value={String(IdentityType.NationalId)}>{t("identityType.1")}</SelectItem>
+                        <SelectItem value={String(IdentityType.Passport)}>{t("identityType.2")}</SelectItem>
+                        <SelectItem value={String(IdentityType.ResidencePermit)}>{t("identityType.3")}</SelectItem>
                       </SelectContent>
                     </Select>
                   )}
@@ -204,11 +208,11 @@ export default function Register() {
                   >
                     <label className="flex items-center gap-2 cursor-pointer">
                       <RadioGroupItem value={String(Gender.Male)} id="g-m" />
-                      <span>{t("gender.0")}</span>
+                      <span>{t("gender.1")}</span>
                     </label>
                     <label className="flex items-center gap-2 cursor-pointer">
                       <RadioGroupItem value={String(Gender.Female)} id="g-f" />
-                      <span>{t("gender.1")}</span>
+                      <span>{t("gender.2")}</span>
                     </label>
                   </RadioGroup>
                 )}
@@ -220,11 +224,55 @@ export default function Register() {
         {step === 2 && (
           <div className="space-y-4 animate-fade-in">
             <h3 className="font-bold text-foreground">{t("auth.additionalInfo")}</h3>
-            <div>
-              <Label>{t("auth.address")}</Label>
-              <Input className="mt-1" placeholder={t("auth.addressHint") as string} {...register("address")} />
-              {errors.address && <p className="text-xs text-destructive mt-1">{errors.address.message}</p>}
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div>
+                <Label>{t("auth.country") || "الدولة"}</Label>
+                <Select
+                  value={selectedCountryIso}
+                  onValueChange={(iso) => {
+                    setSelectedCountryIso(iso);
+                    setSelectedStateIso("");
+                    const c = Country.getCountryByCode(iso);
+                    if (c) setValue("address", `${c.name},`, { shouldValidate: true });
+                    else setValue("address", "", { shouldValidate: true });
+                  }}
+                >
+                  <SelectTrigger className="mt-1"><SelectValue placeholder="..." /></SelectTrigger>
+                  <SelectContent>
+                    {Country.getAllCountries().map((c) => (
+                      <SelectItem key={c.isoCode} value={c.isoCode}>
+                        {c.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>{t("auth.governorate") || "المحافظة / الولاية"}</Label>
+                <Select
+                  value={selectedStateIso}
+                  onValueChange={(iso) => {
+                    setSelectedStateIso(iso);
+                    const c = Country.getCountryByCode(selectedCountryIso);
+                    const s = State.getStateByCodeAndCountry(iso, selectedCountryIso);
+                    if (c && s) {
+                      setValue("address", `${c.name},${s.name}`, { shouldValidate: true });
+                    }
+                  }}
+                  disabled={!selectedCountryIso}
+                >
+                  <SelectTrigger className="mt-1"><SelectValue placeholder="..." /></SelectTrigger>
+                  <SelectContent>
+                    {selectedCountryIso && State.getStatesOfCountry(selectedCountryIso).map((s) => (
+                      <SelectItem key={s.isoCode} value={s.isoCode}>
+                        {s.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
+            {errors.address && <p className="text-xs text-destructive mt-1">{errors.address.message}</p>}
             <div>
               <Label>{t("auth.email")} <span className="text-muted-foreground text-xs">({t("common.optional")})</span></Label>
               <Input className="mt-1" type="email" dir="ltr" {...register("email")} />

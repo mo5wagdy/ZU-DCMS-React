@@ -54,13 +54,13 @@
     "registerSuccess": "Account created successfully"
   },
   "identityType": {
-    "0": "National ID",
-    "1": "Passport",
-    "2": "Residence Permit"
+    "1": "National ID",
+    "2": "Passport",
+    "3": "Residence Permit"
   },
   "gender": {
-    "0": "Male",
-    "1": "Female"
+    "1": "Male",
+    "2": "Female"
   },
   "booking": {
     "new": "New Booking",

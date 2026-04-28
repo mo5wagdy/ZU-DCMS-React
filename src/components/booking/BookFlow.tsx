@@ -63,7 +63,7 @@ export function BookFlow({ bookingType }: Props) {
     try {
       const patient = await patientApi.byUserId(userId || "");
       const data = await bookingApi.create({
-        requestingPatientId: patient.id,
+        PatientId: patient.id,
         dto: {
           bookingType,
           preferredDate: selected.date,
