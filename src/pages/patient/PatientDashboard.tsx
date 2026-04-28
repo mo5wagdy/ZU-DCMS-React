@@ -56,7 +56,7 @@ export default function PatientDashboard() {
   const cancelBooking = async (id: number) => {
     if (!confirm(t("booking.cancelConfirm") as string)) return;
     try {
-      await bookingApi.cancel(id);
+      await bookingApi.cancel({ bookingId: id, patientId: patientQ.data?.id || 0 });
       setOverrides((s) => ({ ...s, [id]: BookingStatus.Cancelled }));
       toast.success(t("booking.cancelled"));
     } catch (e) {

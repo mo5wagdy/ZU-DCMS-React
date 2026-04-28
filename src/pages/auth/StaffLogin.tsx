@@ -36,7 +36,7 @@ export default function StaffLogin() {
   const onSubmit = async (vals: FormVals) => {
     setError(null);
     try {
-      const data = await authApi.staffLogin({ email: vals.email, password: vals.password });
+      const data = await authApi.staffLogin({ dto: { email: vals.email, password: vals.password } });
       setAuth({
         accessToken: data.accessToken,
         refreshToken: data.refreshToken,

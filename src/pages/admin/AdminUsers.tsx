@@ -257,11 +257,13 @@ function CreateUserDialog({ onCreated }: { onCreated: () => void }) {
     setError(null);
     try {
       await adminApi.createUser({
-        username: vals.username,
-        fullName: vals.fullName,
-        email: vals.email,
-        role: vals.role,
-        academicYear: showAcademicYear ? vals.academicYear : undefined,
+        dto: {
+          username: vals.username,
+          fullName: vals.fullName,
+          email: vals.email,
+          role: vals.role,
+          academicYear: showAcademicYear ? vals.academicYear : undefined,
+        }
       });
       toast.success(t("admin.userCreated"));
       reset();

@@ -21,4 +21,8 @@ export const authApi = {
         params: { nationalId },
       }) as any
     ),
+  logout: (refreshToken: string) =>
+    call<string>(api.post<ApiResponse<string>>("/auth/logout", { refreshToken }) as any),
+  refreshToken: (refreshToken: string) =>
+    call<AuthDto>(api.post<ApiResponse<AuthDto>>("/auth/refresh", { refreshToken }) as any),
 };

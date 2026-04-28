@@ -24,17 +24,24 @@ export default function StudentDashboard() {
   const { t } = useTranslation();
   const { student, term, loading, error } = useStudentContext();
   const [cases, setCases] = useState<CaseAssignmentDto[] | null>(null);
+  const [todayQueue, setTodayQueue] = useState<CaseAssignmentDto[] | null>(null);
   const [progress, setProgress] = useState<StudentProgressDto | null>(null);
   const [dataError, setDataError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!student || !term) return;
     let mounted = true;
-    // Backend missing byStudent endpoint
-    Promise.all([Promise.resolve([] as CaseAssignmentDto[]), caseApi.progress(student.id, term.id)])
-      .then(([cs, pr]) => {
+    
+    // Fetch active cases, today's queue, and progress
+    Promise.all([
+      caseApi.studentCases(student.id),
+      caseApi.getTodayPatients(student.applicationUserId),
+      caseApi.progress(student.id, term.id)
+    ])
+      .then(([cs, tq, pr]) => {
         if (!mounted) return;
         setCases(cs ?? []);
+        setTodayQueue(tq ?? []);
         setProgress(pr);
       })
       .catch((e) => mounted && setDataError(e.message));
@@ -53,7 +60,7 @@ export default function StudentDashboard() {
   }
 
   const activeCases = (cases ?? []).filter(
-    (c) => c.status === CaseStatus.Assigned || c.status === CaseStatus.InProgress
+    (c) => c.status === CaseStatus.InProgress
   );
 
   return (
@@ -158,6 +165,48 @@ export default function StudentDashboard() {
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Today's Queue */}
+      <Card className="border-primary/20 bg-primary/5">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-primary animate-pulse" />
+            {t("student.todayQueue")} ({todayQueue?.length ?? 0})
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {!todayQueue ? (
+            <LoadingSpinner />
+          ) : todayQueue.length === 0 ? (
+            <div className="py-6 text-center bg-background/50 rounded-lg border border-dashed border-border">
+              <p className="text-sm text-muted-foreground">{t("student.noQueueToday")}</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {todayQueue.map((c) => (
+                <Link
+                  key={c.id}
+                  to={`/student/case/${c.id}`}
+                  className="flex items-center justify-between gap-4 p-4 rounded-xl bg-background border border-border shadow-sm hover:border-primary transition-all group"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                      {c.patientName.charAt(0)}
+                    </div>
+                    <div>
+                      <div className="font-bold group-hover:text-primary transition-colors">{c.patientName}</div>
+                      <div className="text-xs text-muted-foreground">{c.clinicName} • {c.diagnosis}</div>
+                    </div>
+                  </div>
+                  <Button size="sm" className="rounded-full">
+                    {t("student.startSession")}
+                  </Button>
+                </Link>
+              ))}
             </div>
           )}
         </CardContent>

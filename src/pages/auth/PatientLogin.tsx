@@ -19,7 +19,7 @@ const schema = z.object({
   phoneNumber: z
     .string()
     .trim()
-    .regex(/^01[0-9]{9}$/, { message: "رقم تليفون غير صحيح (01XXXXXXXXX)" }),
+    .regex(/^\+?[0-9]{10,15}$/, { message: "رقم الهاتف غير صحيح" }),
   identityNumber: z.string().trim().min(6, { message: "رقم الهوية مطلوب" }).max(20),
 });
 type FormVals = z.infer<typeof schema>;
@@ -40,7 +40,7 @@ export default function PatientLogin() {
   const onSubmit = async (vals: FormVals) => {
     setError(null);
     try {
-      const data = await authApi.login({ phoneNumber: vals.phoneNumber, identityNumber: vals.identityNumber });
+      const data = await authApi.login({ dto: { phoneNumber: vals.phoneNumber, identityNumber: vals.identityNumber } });
       setAuth({
         accessToken: data.accessToken,
         refreshToken: data.refreshToken,

@@ -13,9 +13,9 @@ export const caseApi = {
     call<CaseSessionDto>(
       api.post<ApiResponse<CaseSessionDto>>("/cases/progress", cmd) as any
     ),
-  submit: (caseAssignmentId: number) =>
+  submit: (cmd: { studentId: number; caseAssignmentId: number }) =>
     call<string>(
-      api.post<ApiResponse<string>>("/cases/submit", { caseAssignmentId }) as any
+      api.post<ApiResponse<string>>("/cases/submit", cmd) as any
     ),
   progress: (studentId: number, termId: number) =>
     call<StudentProgressDto>(
@@ -23,7 +23,7 @@ export const caseApi = {
         params: { studentId, termId },
       }) as any
     ),
-  review: (cmd: { caseAssignmentId: number; status: string; notes?: string }) =>
+  review: (cmd: { teachingAssistantId: string; dto: ReviewCaseDto }) =>
     call<string>(
       api.post<ApiResponse<string>>("/cases/review", cmd) as any
     ),
@@ -43,6 +43,12 @@ export const caseApi = {
     call<ReviewCaseDto[]>(
       api.get<ApiResponse<ReviewCaseDto[]>>("/cases/reviews", {
         params: { caseAssignmentId },
+      }) as any
+    ),
+  getTodayPatients: (userId: string) =>
+    call<CaseAssignmentDto[]>(
+      api.get<ApiResponse<CaseAssignmentDto[]>>("/cases/today-patients", {
+        params: { userId },
       }) as any
     ),
 };

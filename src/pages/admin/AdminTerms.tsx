@@ -33,6 +33,7 @@ import { ErrorMessage } from "@/components/shared/ErrorMessage";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { Breadcrumbs } from "@/components/shared/Breadcrumbs";
 import { useFetch } from "@/hooks/useFetch";
+import { useAuth } from "@/hooks/useAuth";
 import { adminApi } from "@/api/admin.api";
 import { formatDate } from "@/utils/format";
 import type { TermDto } from "@/types";
@@ -51,6 +52,7 @@ type TermForm = z.infer<typeof termSchema>;
  */
 export default function AdminTerms() {
   const { t } = useTranslation();
+  const { userId } = useAuth();
   const termsQ = useFetch<TermDto[]>(() => adminApi.getTerms().then((d) => d ?? []), []);
 
   const [openCreate, setOpenCreate] = useState(false);
@@ -60,7 +62,7 @@ export default function AdminTerms() {
   const handleActivate = async () => {
     if (!activateTarget) return;
     try {
-      await adminApi.setActiveTerm(activateTarget.id);
+      await adminApi.setActiveTerm({ termId: activateTarget.id, adminId: userId || "" });
       toast.success(t("admin.termActivated"));
       setActivateTarget(null);
       termsQ.refetch();
@@ -233,6 +235,7 @@ function TermFormDialog({
   onSaved: () => void;
 }) {
   const { t } = useTranslation();
+  const { userId } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const {
     register,
@@ -260,19 +263,25 @@ function TermFormDialog({
     try {
       if (mode === "create") {
         await adminApi.createTerm({
-          name: vals.name,
-          startDate: vals.startDate,
-          endDate: vals.endDate,
-          requiredCasesCount: vals.requiredCasesCount,
+          adminId: userId || "",
+          dto: {
+            name: vals.name,
+            startDate: vals.startDate,
+            endDate: vals.endDate,
+            requiredCasesCount: vals.requiredCasesCount,
+          }
         });
         toast.success(t("admin.termCreated"));
       } else if (initial) {
         await adminApi.updateTerm({
-          ...initial,
-          name: vals.name,
-          startDate: vals.startDate,
-          endDate: vals.endDate,
-          requiredCasesCount: vals.requiredCasesCount,
+          termId: initial.id,
+          adminId: userId || "",
+          dto: {
+            name: vals.name,
+            startDate: vals.startDate,
+            endDate: vals.endDate,
+            requiredCasesCount: vals.requiredCasesCount,
+          }
         });
         toast.success(t("admin.termUpdated"));
       }

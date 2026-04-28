@@ -30,11 +30,11 @@ import { useRTL } from "@/hooks/useRTL";
 const schema = z
   .object({
     fullName: z.string().trim().min(3, { message: "الاسم قصير" }).max(100),
-    username: z.string().trim().min(3).max(50),
+    username: z.string().trim().min(3).max(50).regex(/^[a-zA-Z0-9._-]+$/, { message: "اسم المستخدم غير صالح" }),
     phoneNumber: z
       .string()
       .trim()
-      .regex(/^01[0-9]{9}$/, { message: "رقم تليفون غير صحيح" }),
+      .regex(/^\+?[0-9]{10,15}$/, { message: "رقم تليفون غير صحيح" }),
     identityType: z.coerce.number(),
     identityNumber: z.string().trim().min(6).max(20),
     dateOfBirth: z.string().refine((d) => {
@@ -99,17 +99,19 @@ export default function Register() {
     setError(null);
     try {
       const data = await authApi.register({
-        fullName: vals.fullName,
-        username: vals.username,
-        phoneNumber: vals.phoneNumber,
-        identityType: vals.identityType,
-        identityNumber: vals.identityNumber,
-        dateOfBirth: new Date(vals.dateOfBirth).toISOString(),
-        gender: vals.gender,
-        address: vals.address || undefined,
-        email: vals.email || undefined,
-        chronicConditions: arrayToFlags(vals.chronicConditions),
-        otherConditions: vals.otherConditions || undefined,
+        dto: {
+          fullName: vals.fullName,
+          username: vals.username,
+          phoneNumber: vals.phoneNumber,
+          identityType: vals.identityType,
+          identityNumber: vals.identityNumber,
+          dateOfBirth: new Date(vals.dateOfBirth).toISOString(),
+          gender: vals.gender,
+          address: vals.address || undefined,
+          email: vals.email || undefined,
+          chronicConditions: arrayToFlags(vals.chronicConditions),
+          otherConditions: vals.otherConditions || undefined,
+        }
       });
       setAuth({
         accessToken: data.accessToken,

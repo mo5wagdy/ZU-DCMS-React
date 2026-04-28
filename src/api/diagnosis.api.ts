@@ -8,11 +8,14 @@ import type {
 
 export const diagnosisApi = {
   diagnose: (cmd: {
-    bookingId: number;
-    clinicId: number;
-    diagnosisTypeId: number;
-    complaint: string;
-    notes?: string;
+    internDoctorId: string;
+    dto: {
+      bookingId: number;
+      clinicId: number;
+      diagnosisTypeId: number;
+      complaint: string;
+      notes?: string;
+    };
   }) =>
     call<DiagnosisRecordDto>(
       api.post<ApiResponse<DiagnosisRecordDto>>("/diagnosis", cmd) as any
@@ -23,7 +26,10 @@ export const diagnosisApi = {
         params: { clinicId, termId },
       }) as any
     ),
-  assign: (cmd: { diagnosisId: number; studentId: number }) =>
+  assign: (cmd: {
+    internDoctorId: string;
+    dto: { diagnosisId: number; studentId: number };
+  }) =>
     call<CaseAssignmentDto>(
       api.post<ApiResponse<CaseAssignmentDto>>("/diagnosis/assign", cmd) as any
     ),

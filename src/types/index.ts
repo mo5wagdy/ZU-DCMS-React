@@ -34,7 +34,7 @@ export interface AuthDto {
   fullName?: string;
 }
 
-export interface RegisterPatientCommand {
+export interface RegisterPatientDto {
   username: string;
   fullName: string;
   phoneNumber: string;
@@ -48,14 +48,23 @@ export interface RegisterPatientCommand {
   email?: string;
 }
 
+export interface RegisterPatientCommand {
+  dto: RegisterPatientDto;
+}
+
 export interface LoginCommand {
+  dto:{
   phoneNumber: string;
-  identityNumber: string;
+  identityNumber: string;}
+}
+
+export interface StaffLoginDto {
+  email: string;
+  password: string;
 }
 
 export interface StaffLoginCommand {
-  email: string;
-  password: string;
+  dto: StaffLoginDto;
 }
 
 export interface ForgotPhoneResponseDto {
@@ -80,13 +89,18 @@ export interface PatientDto {
   isActive: boolean;
 }
 
-export interface UpdateProfileCommand {
+export interface UpdatePatientDto {
   username?: string;
   phoneNumber?: string;
   email?: string;
   chronicConditions?: number;
   otherConditions?: string;
   address?: string;
+}
+
+export interface UpdateProfileCommand {
+  id: number;
+  dto: UpdatePatientDto;
 }
 
 // ============= Booking =============
@@ -103,13 +117,19 @@ export interface BookingDto {
   paymentCode?: string;
   paymentStatus: number;
   amount: number;
+  clinicName?: string;
 }
 
-export interface CreateBookingCommand {
+export interface CreateBookingDto {
   bookingType: number;
   preferredDate: string;
   preferredTimeSlot: string;
   preliminaryComplaint?: string;
+}
+
+export interface CreateBookingCommand {
+  requestingPatientId: number;
+  dto: CreateBookingDto;
 }
 
 export interface AvailableSlotDto {
@@ -196,6 +216,7 @@ export interface CaseAssignmentDto {
   patientName: string;
   clinicId: number;
   clinicName: string;
+  studentName: string;
   assignedByInternName: string;
   diagnosis: string;
   notes?: string;
@@ -213,12 +234,18 @@ export interface CaseSessionDto {
   sessionDate: string;
 }
 
-export interface AddSessionProgressCommand {
+export interface AddCaseSessionDto {
   caseAssignmentId: number;
   procedureIds: number[];
   isCompleted: boolean;
   hasFollowUp: boolean;
   notes?: string;
+}
+
+export interface AddSessionProgressCommand {
+  studentId: number;
+  termId: number;
+  dto: AddCaseSessionDto;
 }
 
 export interface ReviewCaseDto {
@@ -230,6 +257,7 @@ export interface ReviewCaseDto {
 // ============= Student =============
 export interface StudentDto {
   id: number;
+  applicationUserId: string;
   studentCode: string;
   fullName: string;
   academicYear: number;
@@ -271,12 +299,16 @@ export interface StaffUsersDto {
   createdAt: string;
 }
 
-export interface CreateUserCommand {
+export interface CreateUserDto {
   username: string;
   fullName: string;
   email: string;
   role: string;
   academicYear?: number;
+}
+
+export interface CreateUserCommand {
+  dto: CreateUserDto;
 }
 
 export interface TermDto {

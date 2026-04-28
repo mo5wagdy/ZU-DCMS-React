@@ -49,6 +49,7 @@ import { Breadcrumbs } from "@/components/shared/Breadcrumbs";
 import { ListSkeleton } from "@/components/shared/Skeletons";
 import { toast } from "@/hooks/use-toast";
 import { caseApi } from "@/api/case.api";
+import { useStudentContext } from "@/hooks/useStudentContext";
 
 
 import { CaseStatus } from "@/utils/enum";
@@ -59,6 +60,7 @@ import type { CaseAssignmentDto, CaseSessionDto, ProcedureDto } from "@/types";
 export default function CaseDetail() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
+  const { student, term } = useStudentContext();
   const lang = useUIStore((s) => s.language);
   const [data, setData] = useState<CaseAssignmentDto | null>(null);
   const [loading, setLoading] = useState(true);
@@ -86,10 +88,11 @@ export default function CaseDetail() {
   }, [id]);
 
   const handleSubmit = async () => {
-    if (!data) return;
-    setSubmitting(true);
     try {
-      await caseApi.submit(data.id);
+      await caseApi.submit({
+        studentId: student?.id || 0,
+        caseAssignmentId: data.id,
+      });
       toast({ title: t("student.submittedSuccess") });
       setShowSubmit(false);
       load();
@@ -121,8 +124,7 @@ export default function CaseDetail() {
     );
   }
 
-  const canEdit =
-    data.status === CaseStatus.Assigned || data.status === CaseStatus.InProgress;
+  const canEdit = data.status === CaseStatus.InProgress;
   const canSubmit = data.status === CaseStatus.InProgress && data.sessions.length > 0;
 
   return (
@@ -326,6 +328,7 @@ function AddSessionDialog({
   onSuccess: () => void;
 }) {
   const { t, i18n } = useTranslation();
+  const { student, term } = useStudentContext();
   const [procedures, setProcedures] = useState<ProcedureDto[]>([]);
   const [selected, setSelected] = useState<number[]>([]);
   const [isCompleted, setIsCompleted] = useState(false);
@@ -382,11 +385,15 @@ function AddSessionDialog({
     setError(null);
     try {
       await caseApi.addProgress({
-        caseAssignmentId: caseAssignment.id,
-        procedureIds: selected,
-        isCompleted,
-        hasFollowUp: isCompleted ? false : hasFollowUp,
-        notes: notes.trim() || undefined,
+        studentId: student?.id || 0,
+        termId: term?.id || 0,
+        dto: {
+          caseAssignmentId: caseAssignment.id,
+          procedureIds: selected,
+          isCompleted,
+          hasFollowUp: isCompleted ? false : hasFollowUp,
+          notes: notes.trim() || undefined,
+        }
       });
       toast({ title: t("student.sessionAdded") });
       onOpenChange(false);

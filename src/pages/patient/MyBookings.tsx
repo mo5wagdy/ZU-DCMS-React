@@ -162,6 +162,7 @@ export default function MyBookings() {
 
       <CancelBookingDialog
         target={cancelTarget}
+        patientId={patientQ.data?.id || 0}
         onClose={() => setCancelTarget(null)}
         onCancelled={() => {
           setCancelTarget(null);
@@ -247,24 +248,24 @@ function BookingRow({
 /** Confirm cancellation with an optional reason. */
 function CancelBookingDialog({
   target,
+  patientId,
   onClose,
   onCancelled,
 }: {
   target: BookingDto | null;
+  patientId: number;
   onClose: () => void;
   onCancelled: () => void;
 }) {
   const { t } = useTranslation();
-  const [reason, setReason] = useState("");
   const [busy, setBusy] = useState(false);
 
   const submit = async () => {
     if (!target) return;
     setBusy(true);
     try {
-      await bookingApi.cancel(target.id, reason.trim() || undefined);
+      await bookingApi.cancel({ bookingId: target.id, patientId });
       toast.success(t("booking.cancelled"));
-      setReason("");
       onCancelled();
     } catch (e) {
       toast.error((e as Error).message);
@@ -284,15 +285,8 @@ function CancelBookingDialog({
             <span className="font-mono">{target.bookingCode}</span>
           </div>
         )}
-        <div>
-          <Label htmlFor="reason">{t("booking.cancelReason")}</Label>
-          <Textarea
-            id="reason"
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            rows={3}
-            className="mt-1"
-          />
+        <div className="py-4">
+          <p className="text-sm">{t("booking.cancelConfirm")}</p>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose} disabled={busy}>

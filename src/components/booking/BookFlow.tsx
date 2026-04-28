@@ -12,10 +12,12 @@ import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { ErrorMessage } from "@/components/shared/ErrorMessage";
 import { sessionApi } from "@/api/session.api";
 import { bookingApi } from "@/api/booking.api";
+import { patientApi } from "@/api/patient.api";
+import { useAuth } from "@/hooks/useAuth";
 import { useUIStore } from "@/store/ui.store";
 import { formatDate, formatTime } from "@/utils/format";
 import { cn } from "@/lib/utils";
-import type { AvailableSlotDto } from "@/types";
+import type { AvailableSlotDto, BookingDto } from "@/types";
 import { toast } from "sonner";
 
 interface Props {
@@ -25,6 +27,7 @@ interface Props {
 export function BookFlow({ bookingType }: Props) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { userId } = useAuth();
   const lang = useUIStore((s) => s.language);
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [slots, setSlots] = useState<AvailableSlotDto[]>([]);
@@ -33,7 +36,7 @@ export function BookFlow({ bookingType }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<AvailableSlotDto | null>(null);
   const [complaint, setComplaint] = useState("");
-  const [bookingCode, setBookingCode] = useState<string | null>(null);
+  const [createdBooking, setCreatedBooking] = useState<BookingDto | null>(null);
 
   useEffect(() => {
     sessionApi
@@ -58,13 +61,17 @@ export function BookFlow({ bookingType }: Props) {
     setSubmitting(true);
     setError(null);
     try {
+      const patient = await patientApi.byUserId(userId || "");
       const data = await bookingApi.create({
-        bookingType,
-        preferredDate: selected.date,
-        preferredTimeSlot: formatTime(selected.startTime),
-        preliminaryComplaint: complaint || undefined,
+        requestingPatientId: patient.id,
+        dto: {
+          bookingType,
+          preferredDate: selected.date,
+          preferredTimeSlot: formatTime(selected.startTime),
+          preliminaryComplaint: complaint || undefined,
+        }
       });
-      setBookingCode(data.bookingCode);
+      setCreatedBooking(data);
       setStep(4);
     } catch (e) {
       setError((e as Error).message);
@@ -184,7 +191,7 @@ export function BookFlow({ bookingType }: Props) {
         </motion.div>
       )}
 
-      {step === 4 && bookingCode && (
+      {step === 4 && createdBooking && (
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
           <Card className="p-10 text-center">
             <div className="grid h-20 w-20 place-items-center rounded-full bg-success/10 text-success mx-auto mb-5">
@@ -192,8 +199,16 @@ export function BookFlow({ bookingType }: Props) {
             </div>
             <h2 className="text-2xl font-bold mb-2">{t("booking.success")}</h2>
             <p className="text-muted-foreground mb-6">{t("booking.keepCode")}</p>
+            
+            {createdBooking.clinicName && (
+              <div className="mb-6 p-4 bg-primary/5 rounded-lg border border-primary/10">
+                <div className="text-sm text-muted-foreground mb-1">{t("booking.clinic")}</div>
+                <div className="text-lg font-bold text-primary">{createdBooking.clinicName}</div>
+              </div>
+            )}
+
             <div className="text-sm text-muted-foreground mb-1">{t("booking.yourCode")}</div>
-            <div className="text-4xl font-extrabold text-primary tracking-wider font-mono mb-8" dir="ltr">{bookingCode}</div>
+            <div className="text-4xl font-extrabold text-primary tracking-wider font-mono mb-8" dir="ltr">{createdBooking.bookingCode}</div>
             <Button onClick={() => navigate("/patient/dashboard")}>{t("common.home")}</Button>
           </Card>
         </motion.div>

@@ -26,11 +26,11 @@ export const sessionApi = {
         params: { date, timeSlot, bookingType },
       }) as any
     ),
-  generate: (startDate: string, endDate: string) =>
+  generate: (startDate: string, daysCount: number = 1) =>
     call<SessionDto[]>(
       api.post<ApiResponse<SessionDto[]>>("/sessions/generate", {
         startDate,
-        endDate,
+        daysCount,
       }) as any
     ),
   patients: (sessionId: number, internDoctorId: string) =>

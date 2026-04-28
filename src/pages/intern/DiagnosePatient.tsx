@@ -30,6 +30,7 @@ import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { ErrorMessage } from "@/components/shared/ErrorMessage";
 import { diagnosisApi } from "@/api/diagnosis.api";
 import { lookupApi } from "@/api/lookup.api";
+import { useAuth } from "@/hooks/useAuth";
 import type { DiagnosisRecordDto, StudentPriorityDto, ClinicDto, DiagnosisTypeDto } from "@/types";
 
 
@@ -49,6 +50,7 @@ type FormValues = z.infer<typeof schema>;
 export default function DiagnosePatient() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const { userId } = useAuth();
   const { bookingId } = useParams<{ bookingId: string }>();
 
   const [clinics, setClinics] = useState<ClinicDto[]>([]);
@@ -88,11 +90,14 @@ export default function DiagnosePatient() {
     setSubmitting(true);
     try {
       const result = await diagnosisApi.diagnose({
-        bookingId: Number(bookingId),
-        clinicId: values.clinicId,
-        diagnosisTypeId: values.diagnosisTypeId,
-        complaint: values.complaint,
-        notes: values.notes || undefined,
+        internDoctorId: userId || "",
+        dto: {
+          bookingId: Number(bookingId),
+          clinicId: values.clinicId,
+          diagnosisTypeId: values.diagnosisTypeId,
+          complaint: values.complaint,
+          notes: values.notes || undefined,
+        }
       });
       setDiagnosis(result);
       toast({ title: t("intern.diagnosisSaved") });
@@ -279,6 +284,7 @@ function AssignStudentPanel({
   onDone: () => void;
 }) {
   const { t } = useTranslation();
+  const { userId } = useAuth();
   const [students, setStudents] = useState<StudentPriorityDto[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [assigning, setAssigning] = useState<number | null>(null);
@@ -297,7 +303,10 @@ function AssignStudentPanel({
     setAssigning(studentId);
     setError(null);
     try {
-      await diagnosisApi.assign({ diagnosisId: diagnosis.id, studentId });
+      await diagnosisApi.assign({
+        internDoctorId: userId || "",
+        dto: { diagnosisId: diagnosis.id, studentId }
+      });
       toast({ title: t("intern.assignSuccess") });
       onDone();
     } catch (e) {

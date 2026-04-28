@@ -60,11 +60,14 @@ export default function PatientProfile() {
     setError(null);
     try {
       const updated = await patientApi.updateProfile({
-        phoneNumber,
-        email: email || undefined,
-        address: address || undefined,
-        chronicConditions: arrayToFlags(conditions),
-        otherConditions: otherConditions || undefined,
+        id: patient.id,
+        dto: {
+          phoneNumber,
+          email: email || undefined,
+          address: address || undefined,
+          chronicConditions: arrayToFlags(conditions),
+          otherConditions: otherConditions || undefined,
+        }
       });
       setPatient(updated);
       setEditing(false);

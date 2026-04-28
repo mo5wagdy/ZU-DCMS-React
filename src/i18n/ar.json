@@ -82,6 +82,7 @@
     "date": "التاريخ",
     "time": "الوقت",
     "type": "النوع",
+    "clinic": "العيادة",
     "status": "الحالة",
     "noBookings": "لا توجد حجوزات حالية",
     "noBookingsDesc": "ابدأ بحجز موعد جديد أو متابعة علاج",
@@ -204,7 +205,10 @@
     "noProcedures": "لا توجد إجراءات",
     "termComplete": "تم إنجاز متطلبات الترم 🎉",
     "overall": "الإجمالي",
-    "ofRequired": "من {{total}}"
+    "ofRequired": "من {{total}}",
+    "todayQueue": "طابور مرضى اليوم",
+    "noQueueToday": "لا يوجد مرضى في طابورك اليوم",
+    "startSession": "بدء الجلسة"
   },
   "ta": {
     "dashboard": "لوحة المعيد",
@@ -308,11 +312,12 @@
     "active": "نشط",
     "inactive": "غير نشط",
     "inProgress": "قيد التنفيذ",
-    "assigned": "معين",
-    "onHold": "متوقف",
+    "transferred": "محول",
+    "pendingReview": "بانتظار المراجعة",
+    "approved": "مقبول",
+    "rejected": "مرفوض",
     "available": "متاح",
-    "unavailable": "غير متاح",
-    "complete": "مكتمل"
+    "unavailable": "غير متاح"
   },
   "roles": {
     "Admin": "مسؤول النظام",

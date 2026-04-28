@@ -82,6 +82,7 @@
     "date": "Date",
     "time": "Time",
     "type": "Type",
+    "clinic": "Clinic",
     "status": "Status",
     "noBookings": "No bookings yet",
     "noBookingsDesc": "Start by booking a new appointment or follow-up",

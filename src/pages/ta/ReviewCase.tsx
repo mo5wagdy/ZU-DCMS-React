@@ -48,11 +48,13 @@ import { toast } from "@/hooks/use-toast";
 import { caseApi } from "@/api/case.api";
 import { formatDate } from "@/utils/format";
 import { useUIStore } from "@/store/ui.store";
+import { useAuth } from "@/hooks/useAuth";
 import type { CaseAssignmentDto, CaseSessionDto } from "@/types";
 
 export default function ReviewCase() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { userId } = useAuth();
   const { caseId } = useParams<{ caseId: string }>();
   const lang = useUIStore((s) => s.language);
 
@@ -81,9 +83,11 @@ export default function ReviewCase() {
 
   const handleApprove = async () => {
     if (!data) return;
-    setSubmitting(true);
     try {
-      await caseApi.review({ caseAssignmentId: data.id, status: "Approved" });
+      await caseApi.review({
+        teachingAssistantId: userId || "",
+        dto: { caseAssignmentId: data.id, isApproved: true }
+      });
       toast({ title: t("ta.approvedSuccess") });
       navigate("/ta/dashboard");
     } catch (e) {
@@ -105,9 +109,12 @@ export default function ReviewCase() {
     setSubmitting(true);
     try {
       await caseApi.review({
-        caseAssignmentId: data.id,
-        status: "Rejected",
-        notes: r,
+        teachingAssistantId: userId || "",
+        dto: {
+          caseAssignmentId: data.id,
+          isApproved: false,
+          notes: r,
+        }
       });
       toast({ title: t("ta.rejectedSuccess") });
       navigate("/ta/dashboard");

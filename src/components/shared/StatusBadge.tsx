@@ -12,11 +12,10 @@ const statusColors: Record<string, string> = {
   active: "bg-success/15 text-success border-success/30",
   inactive: "bg-muted text-muted-foreground border-border",
   inProgress: "bg-info/15 text-info border-info/30",
-  assigned: "bg-accent/20 text-accent border-accent/40",
-  onHold: "bg-warning/15 text-warning border-warning/30",
-  available: "bg-success/15 text-success border-success/30",
-  unavailable: "bg-destructive/15 text-destructive border-destructive/30",
-  complete: "bg-success/15 text-success border-success/30",
+  transferred: "bg-muted text-muted-foreground border-border",
+  pendingReview: "bg-warning/15 text-warning border-warning/30",
+  approved: "bg-success/20 text-success border-success/40",
+  rejected: "bg-destructive/15 text-destructive border-destructive/30",
 };
 
 interface Props {

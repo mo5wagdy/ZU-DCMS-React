@@ -17,7 +17,7 @@ export const adminApi = {
     call<SystemConfigDto[]>(
       api.get<ApiResponse<SystemConfigDto[]>>("/admin/configs") as any
     ),
-  updateConfig: (cmd: { key: string; value: string }) =>
+  updateConfig: (cmd: { key: string; value: string; adminId: string }) =>
     call<string>(api.put<ApiResponse<string>>("/admin/configs", cmd) as any),
 
   // Clinics
@@ -30,16 +30,23 @@ export const adminApi = {
   getTerm: (termId: number) =>
     call<TermDto>(api.get<ApiResponse<TermDto>>(`/admin/terms/${termId}`) as any),
   createTerm: (cmd: {
-    name: string;
-    startDate: string;
-    endDate: string;
-    requiredCasesCount: number;
+    adminId: string;
+    dto: {
+      name: string;
+      startDate: string;
+      endDate: string;
+      requiredCasesCount: number;
+    };
   }) => call<TermDto>(api.post<ApiResponse<TermDto>>("/admin/terms", cmd) as any),
-  updateTerm: (cmd: TermDto) =>
+  updateTerm: (cmd: {
+    termId: number;
+    adminId: string;
+    dto: Omit<TermDto, "id" | "isActive">;
+  }) =>
     call<TermDto>(api.put<ApiResponse<TermDto>>("/admin/terms", cmd) as any),
-  setActiveTerm: (termId: number) =>
+  setActiveTerm: (cmd: { termId: number; adminId: string }) =>
     call<string>(
-      api.put<ApiResponse<string>>("/admin/terms/set-active", { termId }) as any
+      api.put<ApiResponse<string>>("/admin/terms/set-active", cmd) as any
     ),
 
   // Users
@@ -66,6 +73,7 @@ export const adminApi = {
       ) as any
     ),
   setStudentRequirements: (cmd: {
+    adminId: string;
     studentId: number;
     termId: number;
     requirements: { clinicId: number; requiredCount: number }[];

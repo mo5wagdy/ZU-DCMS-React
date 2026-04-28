@@ -94,7 +94,7 @@ function CaseRow({ item, lang }: { item: CaseAssignmentDto; lang: "ar" | "en" })
             <Field
               icon={<GraduationCap className="h-3 w-3" />}
               label={t("ta.student")}
-              value={item.assignedByInternName}
+              value={item.studentName}
             />
             <Field label={t("student.diagnosis")} value={item.diagnosis} />
             <Field label={t("ta.totalSessions")} value={String(item.sessions.length)} />

@@ -44,10 +44,15 @@ export default function MyCases() {
     let list = cases;
     if (filter === "active") {
       list = list.filter(
-        (c) => c.status === CaseStatus.Assigned || c.status === CaseStatus.InProgress
+        (c) =>
+          c.status === CaseStatus.InProgress ||
+          c.status === CaseStatus.PendingReview ||
+          c.status === CaseStatus.Rejected
       );
     } else if (filter === "completed") {
-      list = list.filter((c) => c.status === CaseStatus.Completed);
+      list = list.filter(
+        (c) => c.status === CaseStatus.Approved || c.status === CaseStatus.Completed
+      );
     }
     const q = search.trim().toLowerCase();
     if (q) {

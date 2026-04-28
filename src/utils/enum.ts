@@ -37,11 +37,12 @@ export const BookingStatus = {
 } as const;
 
 export const CaseStatus = {
-  Assigned: 0,
   InProgress: 1,
   Completed: 2,
-  OnHold: 3,
-  Cancelled: 4,
+  Transferred: 3,
+  PendingReview: 4,
+  Approved: 5,
+  Rejected: 6,
 } as const;
 
 export function hasFlag(value: number, flag: number): boolean {
@@ -61,5 +62,13 @@ export function bookingStatusKey(status: number): string {
 }
 
 export function caseStatusKey(status: number): string {
-  return ["assigned", "inProgress", "completed", "onHold", "cancelled"][status] ?? "assigned";
+  const map: Record<number, string> = {
+    1: "inProgress",
+    2: "completed",
+    3: "transferred",
+    4: "pendingReview",
+    5: "approved",
+    6: "rejected"
+  };
+  return map[status] ?? "inProgress";
 }
