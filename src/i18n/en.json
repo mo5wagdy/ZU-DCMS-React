@@ -51,7 +51,9 @@
     "recoveredPhone": "Your registered phone is:",
     "contactAdmin": "Contact administration to change it",
     "loginSuccess": "Signed in successfully",
-    "registerSuccess": "Account created successfully"
+    "registerSuccess": "Account created successfully",
+    "country": "Country",
+    "governorate": "Governorate"
   },
   "identityType": {
     "1": "National ID",

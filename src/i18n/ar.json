@@ -51,7 +51,9 @@
     "recoveredPhone": "رقم التليفون المسجل هو:",
     "contactAdmin": "لو محتاج تغيير تواصل مع الإدارة",
     "loginSuccess": "تم تسجيل الدخول بنجاح",
-    "registerSuccess": "تم إنشاء الحساب بنجاح"
+    "registerSuccess": "تم إنشاء الحساب بنجاح",
+    "country": "الدولة",
+    "governorate": "المحافظة"
   },
   "identityType": {
     "1": "رقم قومي",

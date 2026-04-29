@@ -226,7 +226,7 @@ export default function Register() {
             <h3 className="font-bold text-foreground">{t("auth.additionalInfo")}</h3>
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
-                <Label>{t("auth.country") || "الدولة"}</Label>
+                <Label>{t("auth.country")}</Label>
                 <Select
                   value={selectedCountryIso}
                   onValueChange={(iso) => {
@@ -248,7 +248,7 @@ export default function Register() {
                 </Select>
               </div>
               <div>
-                <Label>{t("auth.governorate") || "المحافظة / الولاية"}</Label>
+                <Label>{t("auth.governorate")}</Label>
                 <Select
                   value={selectedStateIso}
                   onValueChange={(iso) => {
