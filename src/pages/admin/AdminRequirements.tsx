@@ -12,12 +12,14 @@ import { adminApi } from "@/api/admin.api";
 import { studentApi } from "@/api/student.api";
 import { termApi } from "@/api/term.api";
 import { lookupApi } from "@/api/lookup.api";
+import { useAuth } from "@/hooks/useAuth";
 import type { StudentDto, TermDto, StudentRequirementDto, ClinicDto } from "@/types";
 // Removed lookupApi import as per user instruction
 
 
 export default function AdminRequirements() {
   const { t } = useTranslation();
+  const { userId } = useAuth();
   const [students, setStudents] = useState<StudentDto[]>([]);
   const [term, setTerm] = useState<TermDto | null>(null);
   const [clinics, setClinics] = useState<ClinicDto[]>([]);
@@ -102,6 +104,7 @@ export default function AdminRequirements() {
         .map((c) => ({ clinicId: c.id, requiredCount: counts[c.id] ?? 0 }))
         .filter((r) => r.requiredCount > 0);
       await adminApi.setStudentRequirements({
+        adminId: userId || "",
         studentId: selectedStudent.id,
         termId: term.id,
         requirements,

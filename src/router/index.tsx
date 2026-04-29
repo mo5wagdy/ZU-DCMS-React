@@ -35,6 +35,7 @@ import AdminTerms from "@/pages/admin/AdminTerms";
 import AdminConfigs from "@/pages/admin/AdminConfigs";
 import AdminRequirements from "@/pages/admin/AdminRequirements";
 import AdminUserDetail from "@/pages/admin/AdminUserDetail";
+import AdminClinics from "@/pages/admin/AdminClinics";
 
 import ViewDashboard from "@/pages/view/ViewDashboard";
 import ViewStudents from "@/pages/view/ViewStudents";
@@ -118,6 +119,7 @@ const router = createBrowserRouter([
           { path: "admin/terms", element: <AdminTerms /> },
           { path: "admin/configs", element: <AdminConfigs /> },
           { path: "admin/requirements", element: <AdminRequirements /> },
+          { path: "admin/clinics", element: <AdminClinics /> },
         ],
       },
 

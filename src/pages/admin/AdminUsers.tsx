@@ -40,6 +40,7 @@ const userSchema = z.object({
   username: z.string().trim().min(3, "min 3"),
   email: z.string().trim().email("invalid"),
   phoneNumber: z.string().trim().min(5, "required"),
+  password: z.string().min(8, "min 8"),
   role: z.string().min(1, "required"),
   academicYear: z.coerce.number().int().min(1).max(5).optional(),
 });
@@ -263,6 +264,7 @@ function CreateUserDialog({ onCreated }: { onCreated: () => void }) {
           fullName: vals.fullName,
           email: vals.email,
           phoneNumber: vals.phoneNumber,
+          password: vals.password,
           role: vals.role,
           academicYear: showAcademicYear ? vals.academicYear : undefined,
         }
@@ -279,7 +281,6 @@ function CreateUserDialog({ onCreated }: { onCreated: () => void }) {
     <DialogContent className="sm:max-w-[480px]">
       <DialogHeader>
         <DialogTitle>{t("admin.createUser")}</DialogTitle>
-        <DialogDescription>{t("admin.passwordWillBeSent")}</DialogDescription>
       </DialogHeader>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-3" noValidate>
         <Field
@@ -301,6 +302,9 @@ function CreateUserDialog({ onCreated }: { onCreated: () => void }) {
         </Field>
         <Field id="phoneNumber" label={t("auth.phone")} error={errors.phoneNumber?.message}>
           <Input id="phoneNumber" dir="ltr" {...register("phoneNumber")} />
+        </Field>
+        <Field id="password" label={t("auth.password")} error={errors.password?.message}>
+          <Input id="password" type="password" dir="ltr" {...register("password")} />
         </Field>
         <Field id="role" label={t("common.role")} error={errors.role?.message}>
           <Select onValueChange={(v) => setValue("role", v, { shouldValidate: true })}>

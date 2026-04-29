@@ -9,10 +9,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { ErrorMessage } from "@/components/shared/ErrorMessage";
 import { adminApi } from "@/api/admin.api";
+import { useAuth } from "@/hooks/useAuth";
 import type { SystemConfigDto } from "@/types";
 
 export default function AdminConfigs() {
   const { t, i18n } = useTranslation();
+  const { userId } = useAuth();
   const [configs, setConfigs] = useState<SystemConfigDto[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -48,7 +50,7 @@ export default function AdminConfigs() {
     if (value == null) return;
     setSavingKey(key);
     try {
-      await adminApi.updateConfig({ key, value });
+      await adminApi.updateConfig({ key, value, adminId: userId || "" });
       toast.success(t("admin.configUpdated"));
       setReload((r) => r + 1);
     } catch (e) {
@@ -94,9 +96,6 @@ export default function AdminConfigs() {
                     <div className="flex items-center justify-between gap-2 flex-wrap">
                       <div>
                         <div className="font-semibold">{labelFor(c.key)}</div>
-                        <div className="text-[11px] text-muted-foreground font-mono" dir="ltr">
-                          {c.key}
-                        </div>
                       </div>
                     </div>
                     {c.description && (

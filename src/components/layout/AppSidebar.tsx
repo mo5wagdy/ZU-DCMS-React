@@ -73,6 +73,7 @@ function itemsForRole(role: string | null): NavItem[] {
           labelKey: "admin.requirements",
           icon: ListChecks,
         },
+        { to: "/admin/clinics", labelKey: "admin.clinics", icon: Stethoscope },
         // Admins can also see view-only pages
         { to: "/view/students", labelKey: "view.students", icon: GraduationCap },
       ];
