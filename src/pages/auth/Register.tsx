@@ -28,6 +28,37 @@ import { ChronicConditionList, Gender, IdentityType, arrayToFlags } from "@/util
 import { useRTL } from "@/hooks/useRTL";
 import { Country, State } from "country-state-city";
 
+const ARABIC_MAPPING: Record<string, string> = {
+  "Egypt": "مصر",
+  "Al Daqahliyah": "الدقهلية",
+  "Al Bahr al Ahmar": "البحر الأحمر",
+  "Al Buhayrah": "البحيرة",
+  "Al Fayyum": "الفيوم",
+  "Al Gharbiyah": "الغربية",
+  "Al Iskandariyah": "الإسكندرية",
+  "Al Isma'iliyah": "الإسماعيلية",
+  "Al Jizah": "الجيزة",
+  "Al Minufiyah": "المنوفية",
+  "Al Minya": "المنيا",
+  "Al Qahirah": "القاهرة",
+  "Al Qalyubiyah": "القليوبية",
+  "Al Wadi al Jadid": "الوادي الجديد",
+  "As Suways": "السويس",
+  "Ash Sharqiyah": "الشرقية",
+  "Aswan": "أسوان",
+  "Asyut": "أسيوط",
+  "Bani Suwayf": "بني سويف",
+  "Bur Sa'id": "بورسعيد",
+  "Dumyat": "دمياط",
+  "Janub Sina'": "جنوب سيناء",
+  "Kafr ash Shaykh": "كفر الشيخ",
+  "Matruh": "مطروح",
+  "Qina": "قنا",
+  "Shimal Sina'": "شمال سيناء",
+  "Suhaj": "سوهاج",
+  "Luxor": "الأقصر",
+};
+
 const schema = z
   .object({
     fullName: z.string().trim().min(3, { message: "الاسم قصير" }).max(100),
@@ -185,6 +216,9 @@ export default function Register() {
               <div>
                 <Label>{t("auth.identityNumber")}</Label>
                 <Input className="mt-1" dir="ltr" type="password" {...register("identityNumber")} />
+                {watch("identityType") === IdentityType.NationalId && (
+                  <p className="text-[10px] text-accent mt-1">يجب إدخال 14 رقم صحيح</p>
+                )}
               </div>
             </div>
             {errors.identityNumber && <p className="text-xs text-destructive">{errors.identityNumber.message}</p>}
@@ -241,7 +275,7 @@ export default function Register() {
                   <SelectContent>
                     {Country.getAllCountries().map((c) => (
                       <SelectItem key={c.isoCode} value={c.isoCode}>
-                        {c.name}
+                        {ARABIC_MAPPING[c.name] || c.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -265,7 +299,7 @@ export default function Register() {
                   <SelectContent>
                     {selectedCountryIso && State.getStatesOfCountry(selectedCountryIso).map((s) => (
                       <SelectItem key={s.isoCode} value={s.isoCode}>
-                        {s.name}
+                        {ARABIC_MAPPING[s.name] || s.name}
                       </SelectItem>
                     ))}
                   </SelectContent>

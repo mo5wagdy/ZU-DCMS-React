@@ -15,13 +15,13 @@ import { bookingApi } from "@/api/booking.api";
 import { patientApi } from "@/api/patient.api";
 import { useAuth } from "@/hooks/useAuth";
 import { useUIStore } from "@/store/ui.store";
-import { formatDate, formatTime } from "@/utils/format";
+import { formatDate, formatTime, formatTime12h } from "@/utils/format";
 import { cn } from "@/lib/utils";
 import type { AvailableSlotDto, BookingDto } from "@/types";
 import { toast } from "sonner";
 
 interface Props {
-  bookingType: 0 | 1; // New or FollowUp
+  bookingType: 1 | 2; // New or FollowUp
 }
 
 export function BookFlow({ bookingType }: Props) {
@@ -86,10 +86,10 @@ export function BookFlow({ bookingType }: Props) {
     <div className="container max-w-3xl py-8">
       <div className="mb-6">
         <Badge variant="outline" className="mb-2 bg-primary/5 text-primary border-primary/20">
-          {bookingType === 0 ? t("booking.new") : t("booking.followUp")}
+          {bookingType === 1 ? t("booking.new") : t("booking.followUp")}
         </Badge>
         <h1 className="text-2xl font-bold">
-          {bookingType === 0 ? t("booking.newAppointment") : t("booking.followUpAppointment")}
+          {bookingType === 1 ? t("booking.newAppointment") : t("booking.followUpAppointment")}
         </h1>
       </div>
 
@@ -107,7 +107,7 @@ export function BookFlow({ bookingType }: Props) {
                 <div className="font-bold text-primary mb-3">{formatDate(date, lang)}</div>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
                   {daySlots.map((s) => {
-                    const available = bookingType === 0 ? s.availableNewSlots : s.availableFollowUpSlots;
+                    const available = bookingType === 1 ? s.availableNewSlots : s.availableFollowUpSlots;
                     const isFull = !s.isAvailable || available <= 0;
                     return (
                       <button
@@ -124,7 +124,7 @@ export function BookFlow({ bookingType }: Props) {
                       >
                         <div className="flex items-center gap-1.5 font-semibold">
                           <Clock className="h-4 w-4 text-primary" />
-                          <span dir="ltr">{formatTime(s.startTime)} - {formatTime(s.endTime)}</span>
+                          <span dir="ltr">{formatTime12h(s.startTime, lang)} - {formatTime12h(s.endTime, lang)}</span>
                         </div>
                         {isFull ? (
                           <Badge variant="outline" className="mt-2 bg-destructive/10 text-destructive border-destructive/20">
@@ -150,7 +150,7 @@ export function BookFlow({ bookingType }: Props) {
           <Card className="p-5 bg-secondary/30">
             <div className="text-xs text-muted-foreground mb-1">{t("booking.selectSlot")}</div>
             <div className="font-bold">{formatDate(selected.date, lang)}</div>
-            <div className="text-sm" dir="ltr">{formatTime(selected.startTime)} - {formatTime(selected.endTime)}</div>
+            <div className="text-sm" dir="ltr">{formatTime12h(selected.startTime, lang)} - {formatTime12h(selected.endTime, lang)}</div>
           </Card>
           <div>
             <label className="block text-sm font-semibold mb-2">{t("booking.complaint")}</label>
@@ -175,9 +175,9 @@ export function BookFlow({ bookingType }: Props) {
           <Card className="p-6 space-y-3">
             <h2 className="font-bold">{t("booking.confirmation")}</h2>
             <div className="grid grid-cols-2 gap-3 text-sm">
-              <div><div className="text-muted-foreground">{t("booking.type")}</div><div className="font-semibold">{bookingType === 0 ? t("booking.new") : t("booking.followUp")}</div></div>
+              <div><div className="text-muted-foreground">{t("booking.type")}</div><div className="font-semibold">{bookingType === 1 ? t("booking.new") : t("booking.followUp")}</div></div>
               <div><div className="text-muted-foreground">{t("booking.date")}</div><div className="font-semibold">{formatDate(selected.date, lang)}</div></div>
-              <div className="col-span-2"><div className="text-muted-foreground">{t("booking.time")}</div><div className="font-semibold" dir="ltr">{formatTime(selected.startTime)} - {formatTime(selected.endTime)}</div></div>
+              <div className="col-span-2"><div className="text-muted-foreground">{t("booking.time")}</div><div className="font-semibold" dir="ltr">{formatTime12h(selected.startTime, lang)} - {formatTime12h(selected.endTime, lang)}</div></div>
               {complaint && <div className="col-span-2"><div className="text-muted-foreground">{t("booking.complaint")}</div><div className="text-sm">{complaint}</div></div>}
             </div>
           </Card>

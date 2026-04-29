@@ -27,7 +27,7 @@ import { useFetch } from "@/hooks/useFetch";
 import { useUIStore } from "@/store/ui.store";
 import { patientApi } from "@/api/patient.api";
 import { bookingApi } from "@/api/booking.api";
-import { formatDate, formatTime } from "@/utils/format";
+import { formatDate, formatTime12h } from "@/utils/format";
 import { BookingStatus } from "@/utils/enum";
 import { toast } from "sonner";
 import type { BookingDto } from "@/types";
@@ -204,12 +204,12 @@ function BookingRow({
               <Badge
                 variant="outline"
                 className={
-                  booking.bookingType === 0
+                  booking.bookingType === 1
                     ? "bg-info/10 text-info border-info/20"
                     : "bg-accent/10 text-accent border-accent/20"
                 }
               >
-                {booking.bookingType === 0
+                {booking.bookingType === 1
                   ? t("booking.new")
                   : t("booking.followUp")}
               </Badge>
@@ -217,8 +217,8 @@ function BookingRow({
             </div>
             <div className="text-sm text-muted-foreground">
               {formatDate(booking.sessionDate, lang)} ·{" "}
-              {formatTime(booking.sessionStartTime)} -{" "}
-              {formatTime(booking.sessionEndTime)}
+              {formatTime12h(booking.sessionStartTime, lang)} -{" "}
+              {formatTime12h(booking.sessionEndTime, lang)}
             </div>
             {booking.preliminaryComplaint && (
               <>

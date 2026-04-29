@@ -8,7 +8,7 @@ import { ErrorMessage } from "@/components/shared/ErrorMessage";
 import { ListSkeleton } from "@/components/shared/Skeletons";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { sessionApi } from "@/api/session.api";
-import { formatDate, formatTime } from "@/utils/format";
+import { formatDate, formatTime12h } from "@/utils/format";
 import { useUIStore } from "@/store/ui.store";
 import { useFetch } from "@/hooks/useFetch";
 import type { SessionDto } from "@/types";
@@ -20,9 +20,8 @@ import type { SessionDto } from "@/types";
 export default function InternDashboard() {
   const { t } = useTranslation();
   const lang = useUIStore((s) => s.language);
-  // Backend missing today endpoint
   const { data: sessions, loading, error } = useFetch<SessionDto[]>(
-    () => Promise.resolve([]),
+    () => sessionApi.getToday(),
     []
   );
 
@@ -72,6 +71,7 @@ export default function InternDashboard() {
 // Single session capacity tile + CTA
 function SessionCard({ session }: { session: SessionDto }) {
   const { t } = useTranslation();
+  const lang = useUIStore((s) => s.language);
   const newPct =
     session.maxNewPatients > 0
       ? (session.currentNewCount / session.maxNewPatients) * 100
@@ -87,7 +87,7 @@ function SessionCard({ session }: { session: SessionDto }) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 font-semibold text-primary">
             <Clock className="h-4 w-4" />
-            {formatTime(session.startTime)} - {formatTime(session.endTime)}
+            {formatTime12h(session.startTime, lang)} - {formatTime12h(session.endTime, lang)}
           </div>
           {session.isFull && (
             <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/30">

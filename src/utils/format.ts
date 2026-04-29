@@ -11,9 +11,22 @@ export function formatDate(date: string | Date, lang: "ar" | "en" = "ar"): strin
 }
 
 export function formatTime(time: string): string {
-  // "09:00:00" -> "09:00"
   if (!time) return "";
   return time.slice(0, 5);
+}
+
+export function formatTime12h(time: string, lang: "ar" | "en" = "ar"): string {
+  if (!time) return "";
+  try {
+    const parts = time.split(":");
+    let h = parseInt(parts[0], 10);
+    const m = parts[1];
+    const ampm = h >= 12 ? (lang === "ar" ? "م" : "PM") : (lang === "ar" ? "ص" : "AM");
+    h = h % 12 || 12;
+    return `${h}:${m} ${ampm}`;
+  } catch {
+    return time.slice(0, 5);
+  }
 }
 
 export function formatPhone(phone: string): string {

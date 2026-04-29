@@ -14,8 +14,11 @@ export function ProtectedRoute({ allowedRoles }: Props) {
     return <Navigate to={`/auth/login?redirect=${redirect}`} replace />;
   }
 
-  if (allowedRoles && allowedRoles.length > 0 && role && !allowedRoles.includes(role)) {
-    return <Navigate to="/unauthorized" replace />;
+  if (allowedRoles && allowedRoles.length > 0 && role) {
+    const isAllowed = allowedRoles.some(r => r.toLowerCase() === role.toLowerCase());
+    if (!isAllowed) {
+      return <Navigate to="/unauthorized" replace />;
+    }
   }
 
   return <Outlet />;

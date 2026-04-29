@@ -39,4 +39,6 @@ export const sessionApi = {
         params: { sessionId, internDoctorId },
       }) as any
     ),
+  getToday: () =>
+    call<SessionDto[]>(api.get<ApiResponse<SessionDto[]>>("/sessions/today") as any),
 };

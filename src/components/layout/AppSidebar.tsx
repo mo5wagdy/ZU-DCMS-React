@@ -39,8 +39,9 @@ interface NavItem {
 }
 
 function itemsForRole(role: string | null): NavItem[] {
-  switch (role) {
-    case "Patient":
+  const normalizedRole = role?.toLowerCase() || "";
+  switch (normalizedRole) {
+    case "patient":
       return [
         { to: "/patient/dashboard", labelKey: "patient.dashboard", icon: Home },
         { to: "/patient/bookings", labelKey: "patient.myBookings", icon: ClipboardList },
@@ -48,21 +49,21 @@ function itemsForRole(role: string | null): NavItem[] {
         { to: "/booking/new", labelKey: "booking.newAppointment", icon: Calendar },
         { to: "/booking/followup", labelKey: "booking.followUp", icon: Calendar },
       ];
-    case "InternDoctor":
+    case "interndoctor":
       return [
         { to: "/intern/dashboard", labelKey: "intern.dashboard", icon: Home },
       ];
-    case "Student":
+    case "student":
       return [
         { to: "/student/dashboard", labelKey: "student.dashboard", icon: Home },
         { to: "/student/cases", labelKey: "student.myCases", icon: ClipboardList },
         { to: "/student/progress", labelKey: "student.progress", icon: TrendingUp },
       ];
-    case "TeachingAssistant":
+    case "teachingassistant":
       return [
         { to: "/ta/dashboard", labelKey: "ta.dashboard", icon: ClipboardCheck },
       ];
-    case "Admin":
+    case "admin":
       return [
         { to: "/admin/dashboard", labelKey: "admin.dashboard", icon: ShieldCheck },
         { to: "/admin/users", labelKey: "admin.users", icon: Users },
@@ -77,9 +78,9 @@ function itemsForRole(role: string | null): NavItem[] {
         // Admins can also see view-only pages
         { to: "/view/students", labelKey: "view.students", icon: GraduationCap },
       ];
-    case "Dean":
-    case "ViceDean":
-    case "Professor":
+    case "dean":
+    case "vicedean":
+    case "professor":
       return [
         { to: "/view/dashboard", labelKey: "view.dashboard", icon: BarChart3 },
         { to: "/view/students", labelKey: "view.students", icon: GraduationCap },
