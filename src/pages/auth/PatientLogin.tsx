@@ -14,6 +14,7 @@ import { ErrorMessage } from "@/components/shared/ErrorMessage";
 import { authApi } from "@/api/auth.api";
 import { useAuth } from "@/hooks/useAuth";
 import { homeForRole } from "@/utils/roles";
+import { toEnglishDigits } from "@/utils/format";
 
 const schema = z.object({
   phoneNumber: z
@@ -41,7 +42,12 @@ export default function PatientLogin() {
   const onSubmit = async (vals: FormVals) => {
     setError(null);
     try {
-      const data = await authApi.login({ dto: { phoneNumber: vals.phoneNumber, identityNumber: vals.identityNumber } });
+      const data = await authApi.login({ 
+        dto: { 
+          phoneNumber: toEnglishDigits(vals.phoneNumber), 
+          identityNumber: toEnglishDigits(vals.identityNumber) 
+        } 
+      });
       setAuth({
         accessToken: data.accessToken,
         refreshToken: data.refreshToken,

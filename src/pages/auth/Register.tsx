@@ -28,6 +28,7 @@ import { ChronicConditionList, Gender, IdentityType, arrayToFlags } from "@/util
 import { useRTL } from "@/hooks/useRTL";
 import { Country, State } from "country-state-city";
 import { getLocalizedName } from "@/utils/location";
+import { toEnglishDigits } from "@/utils/format";
 
 const schema = z
   .object({
@@ -112,9 +113,9 @@ export default function Register() {
         dto: {
           fullName: vals.fullName,
           username: vals.username,
-          phoneNumber: vals.phoneNumber,
+          phoneNumber: toEnglishDigits(vals.phoneNumber),
           identityType: vals.identityType,
-          identityNumber: vals.identityNumber,
+          identityNumber: toEnglishDigits(vals.identityNumber),
           dateOfBirth: new Date(vals.dateOfBirth).toISOString(),
           gender: vals.gender,
           address: vals.address || undefined,

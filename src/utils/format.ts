@@ -47,3 +47,11 @@ export function formatPhone(phone: string): string {
   }
   return phone;
 }
+export function toEnglishDigits(str: string): string {
+  if (!str) return "";
+  const arDigits: Record<string, string> = {
+    "٠": "0", "١": "1", "٢": "2", "٣": "3", "٤": "4",
+    "٥": "5", "٦": "6", "٧": "7", "٨": "8", "٩": "9",
+  };
+  return str.replace(/[٠-٩]/g, (w) => arDigits[w]);
+}
