@@ -27,37 +27,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { ChronicConditionList, Gender, IdentityType, arrayToFlags } from "@/utils/enum";
 import { useRTL } from "@/hooks/useRTL";
 import { Country, State } from "country-state-city";
-
-const ARABIC_MAPPING: Record<string, string> = {
-  "Egypt": "مصر",
-  "Al Daqahliyah": "الدقهلية",
-  "Al Bahr al Ahmar": "البحر الأحمر",
-  "Al Buhayrah": "البحيرة",
-  "Al Fayyum": "الفيوم",
-  "Al Gharbiyah": "الغربية",
-  "Al Iskandariyah": "الإسكندرية",
-  "Al Isma'iliyah": "الإسماعيلية",
-  "Al Jizah": "الجيزة",
-  "Al Minufiyah": "المنوفية",
-  "Al Minya": "المنيا",
-  "Al Qahirah": "القاهرة",
-  "Al Qalyubiyah": "القليوبية",
-  "Al Wadi al Jadid": "الوادي الجديد",
-  "As Suways": "السويس",
-  "Ash Sharqiyah": "الشرقية",
-  "Aswan": "أسوان",
-  "Asyut": "أسيوط",
-  "Bani Suwayf": "بني سويف",
-  "Bur Sa'id": "بورسعيد",
-  "Dumyat": "دمياط",
-  "Janub Sina'": "جنوب سيناء",
-  "Kafr ash Shaykh": "كفر الشيخ",
-  "Matruh": "مطروح",
-  "Qina": "قنا",
-  "Shimal Sina'": "شمال سيناء",
-  "Suhaj": "سوهاج",
-  "Luxor": "الأقصر",
-};
+import { getLocalizedName } from "@/utils/location";
 
 const schema = z
   .object({
@@ -85,7 +55,7 @@ const schema = z
 type FormVals = z.infer<typeof schema>;
 
 export default function Register() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { setAuth } = useAuth();
   const isRTL = useRTL();
@@ -132,6 +102,10 @@ export default function Register() {
   };
 
   const onSubmit = async (vals: FormVals) => {
+    if (step < 3) {
+      goNext();
+      return;
+    }
     setError(null);
     try {
       const data = await authApi.register({
@@ -290,7 +264,7 @@ export default function Register() {
                   <SelectContent>
                     {Country.getAllCountries().map((c) => (
                       <SelectItem key={c.isoCode} value={c.isoCode}>
-                        {ARABIC_MAPPING[c.name] || c.name}
+                        {getLocalizedName(c.name, i18n.language.startsWith("ar") ? "ar" : "en")}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -314,7 +288,7 @@ export default function Register() {
                   <SelectContent>
                     {selectedCountryIso && State.getStatesOfCountry(selectedCountryIso).map((s) => (
                       <SelectItem key={s.isoCode} value={s.isoCode}>
-                        {ARABIC_MAPPING[s.name] || s.name}
+                        {getLocalizedName(s.name, i18n.language.startsWith("ar") ? "ar" : "en")}
                       </SelectItem>
                     ))}
                   </SelectContent>

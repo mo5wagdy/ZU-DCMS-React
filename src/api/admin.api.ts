@@ -2,6 +2,7 @@ import { api, call } from "./axios";
 import type {
   ApiResponse,
   CreateUserCommand,
+  DailyMetricsDto,
   PagedRequest,
   PagedResult,
   StaffUsersDto,
@@ -23,6 +24,10 @@ export const adminApi = {
   // Clinics
   getClinics: () =>
     call<ClinicDto[]>(api.get<ApiResponse<ClinicDto[]>>("/admin/clinics") as any),
+
+  // Dashboard daily metrics
+  getDailyMetrics: () =>
+    call<DailyMetricsDto>(api.get<ApiResponse<DailyMetricsDto>>("/admin/dashboard/daily-metrics") as any),
 
   // Terms
   getTerms: () =>

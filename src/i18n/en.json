@@ -242,7 +242,20 @@
     "viewProgress": "View progress",
     "totalCases": "Total cases",
     "completionRate": "Completion rate",
-    "noStudents": "No students"
+    "noStudents": "No students",
+    "todayActivity": "Today's Activity",
+    "todayNewPatients": "New Patients Today",
+    "todayBookings": "Total Bookings Today",
+    "activeSessions": "Active Sessions Today",
+    "bookingBreakdown": "Booking Breakdown",
+    "newBookings": "New Bookings",
+    "followUpBookings": "Follow-Up Bookings",
+    "pendingBookings": "Pending Bookings",
+    "cancelledBookings": "Cancelled Bookings",
+    "caseStatus": "Clinical Case Status",
+    "inProgressCases": "Cases In Treatment",
+    "completedToday": "Cases Completed Today",
+    "quickLinks": "Quick Links"
   },
   "admin": {
     "dashboard": "Admin Dashboard",

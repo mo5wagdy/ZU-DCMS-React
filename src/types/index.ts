@@ -24,6 +24,20 @@ export interface PagedResult<T> {
   hasPreviousPage: boolean;
 }
 
+// ============= Admin / Dashboard =============
+export interface DailyMetricsDto {
+  todayNewPatientsCount: number;
+  todayBookingsCount: number;
+  todayNewBookingsCount: number;
+  todayFollowUpBookingsCount: number;
+  pendingBookingsCount: number;
+  cancelledBookingsCount: number;
+  inProgressCasesCount: number;
+  completedCasesCount: number;
+  activeSessionsCount: number;
+  totalActiveStudents: number;
+}
+
 // ============= Auth =============
 export interface AuthDto {
   accessToken: string;
@@ -68,7 +82,7 @@ export interface StaffLoginCommand {
 }
 
 export interface ForgotPhoneResponseDto {
-  maskedPhone: string;
+  maskedPhoneNumber: string;
 }
 
 // ============= Patient =============
@@ -114,9 +128,6 @@ export interface BookingDto {
   sessionDate: string;
   sessionStartTime: string;
   sessionEndTime: string;
-  paymentCode?: string;
-  paymentStatus: number;
-  amount: number;
   clinicName?: string;
 }
 

@@ -245,7 +245,20 @@
     "viewProgress": "عرض التقدم",
     "totalCases": "إجمالي الحالات",
     "completionRate": "نسبة الإنجاز",
-    "noStudents": "لا يوجد طلاب"
+    "noStudents": "لا يوجد طلاب",
+    "todayActivity": "نشاط اليوم",
+    "todayNewPatients": "مرضى جدد اليوم",
+    "todayBookings": "إجمالي حجوزات اليوم",
+    "activeSessions": "سكاشن فعالة اليوم",
+    "bookingBreakdown": "تفاصيل الحجوزات",
+    "newBookings": "حجوزات جديدة",
+    "followUpBookings": "حجوزات متابعة",
+    "pendingBookings": "حجوزات قيد الانتظار",
+    "cancelledBookings": "حجوزات ملغاة",
+    "caseStatus": "حالة الملفات العلاجية",
+    "inProgressCases": "حالات قيد العلاج",
+    "completedToday": "حالات أُنهيت اليوم",
+    "quickLinks": "روابط سريعة"
   },
   "admin": {
     "dashboard": "لوحة المسؤول",

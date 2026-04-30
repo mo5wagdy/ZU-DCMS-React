@@ -167,6 +167,7 @@ export default function MyBookings() {
         onCancelled={() => {
           setCancelTarget(null);
           bookingsQ.refetch();
+          useUIStore.getState().triggerRefresh();
         }}
       />
     </div>
@@ -186,8 +187,7 @@ function BookingRow({
   const { t } = useTranslation();
   const canCancel =
     (booking.status === BookingStatus.Pending ||
-      booking.status === BookingStatus.Confirmed) &&
-    booking.paymentStatus === 0;
+      booking.status === BookingStatus.Confirmed);
 
   return (
     <Card>

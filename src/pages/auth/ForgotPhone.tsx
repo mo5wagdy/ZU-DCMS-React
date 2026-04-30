@@ -54,7 +54,7 @@ export default function ForgotPhone() {
     setMaskedPhone(null);
     try {
       const data = await authApi.forgotPhone(vals.identityNumber);
-      setMaskedPhone(data.maskedPhone);
+      setMaskedPhone(data.maskedPhoneNumber);
     } catch (e) {
       setError((e as Error).message);
     }

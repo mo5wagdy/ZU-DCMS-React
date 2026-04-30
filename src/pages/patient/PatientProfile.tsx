@@ -20,6 +20,7 @@ import { ChronicConditionList, Gender, arrayToFlags, flagsToArray } from "@/util
 import type { PatientDto } from "@/types";
 import { Country, State } from "country-state-city";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { getLocalizedName } from "@/utils/location";
 
 export default function PatientProfile() {
   const { t } = useTranslation();
@@ -161,7 +162,9 @@ export default function PatientProfile() {
               {editing ? (
                 <Input className="mt-1" dir="ltr" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
               ) : (
-                <div className="mt-1 font-semibold" dir="ltr">{patient.phoneNumber}</div>
+                <div className="mt-1 font-semibold text-start text-foreground">
+                  <span dir="ltr">{patient.phoneNumber}</span>
+                </div>
               )}
             </div>
             <div>
@@ -169,7 +172,9 @@ export default function PatientProfile() {
               {editing ? (
                 <Input className="mt-1" dir="ltr" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
               ) : (
-                <div className="mt-1 font-semibold" dir="ltr">{patient.email || "—"}</div>
+                <div className="mt-1 font-semibold text-start text-foreground">
+                  <span dir="ltr">{patient.email || "—"}</span>
+                </div>
               )}
             </div>
             <div className="sm:col-span-2 grid sm:grid-cols-2 gap-4">
@@ -190,13 +195,15 @@ export default function PatientProfile() {
                     <SelectContent>
                       {Country.getAllCountries().map((c) => (
                         <SelectItem key={c.isoCode} value={c.isoCode}>
-                          {c.name}
+                          {getLocalizedName(c.name, lang.startsWith("ar") ? "ar" : "en")}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 ) : (
-                  <div className="mt-1 font-semibold">{patient.address ? patient.address.split(',')[0] : "—"}</div>
+                  <div className="mt-1 font-semibold">
+                    {patient.address ? getLocalizedName(patient.address.split(',')[0], lang.startsWith("ar") ? "ar" : "en") : "—"}
+                  </div>
                 )}
               </div>
               <div>
@@ -218,13 +225,15 @@ export default function PatientProfile() {
                     <SelectContent>
                       {selectedCountryIso && State.getStatesOfCountry(selectedCountryIso).map((s) => (
                         <SelectItem key={s.isoCode} value={s.isoCode}>
-                          {s.name}
+                          {getLocalizedName(s.name, lang.startsWith("ar") ? "ar" : "en")}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 ) : (
-                  <div className="mt-1 font-semibold">{patient.address ? patient.address.split(',')[1] : "—"}</div>
+                  <div className="mt-1 font-semibold">
+                    {patient.address && patient.address.split(',')[1] ? getLocalizedName(patient.address.split(',')[1], lang.startsWith("ar") ? "ar" : "en") : "—"}
+                  </div>
                 )}
               </div>
             </div>

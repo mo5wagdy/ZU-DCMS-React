@@ -13,6 +13,7 @@ import { ErrorMessage } from "@/components/shared/ErrorMessage";
 import { sessionApi } from "@/api/session.api";
 import { bookingApi } from "@/api/booking.api";
 import { patientApi } from "@/api/patient.api";
+import { useFetch } from "@/hooks/useFetch";
 import { useAuth } from "@/hooks/useAuth";
 import { useUIStore } from "@/store/ui.store";
 import { formatDate, formatTime, formatTime12h, formatSessionRange } from "@/utils/format";
@@ -38,10 +39,35 @@ export function BookFlow({ bookingType }: Props) {
   const [complaint, setComplaint] = useState("");
   const [createdBooking, setCreatedBooking] = useState<BookingDto | null>(null);
 
+  const patientQ = useFetch(
+    () => (userId ? patientApi.byUserId(userId) : Promise.resolve(null as never)),
+    [userId]
+  );
+
+  const bookingsQ = useFetch(
+    () => patientQ.data ? bookingApi.byPatient(patientQ.data.id, { page: 1, pageSize: 10, sortBy: "sessionDate", sortDescending: true }) : Promise.resolve(null as never),
+    [patientQ.data?.id]
+  );
+
+  const hasActiveBooking = useMemo(() => {
+    if (!bookingsQ.data) return false;
+    return bookingsQ.data.items.some(b => b.status === 1 || b.status === 2 || b.status === 6);
+  }, [bookingsQ.data]);
+
   useEffect(() => {
     sessionApi
       .availableSlots(bookingType)
-      .then(setSlots)
+      .then((data) => {
+        const today = new Date().toISOString().split("T")[0];
+        const nowTime = new Date().toTimeString().slice(0, 5) + ":00";
+        const valid = data.filter(s => {
+          const sDate = s.date.split("T")[0];
+          if (sDate < today) return false;
+          if (sDate === today && s.endTime <= nowTime) return false;
+          return true;
+        });
+        setSlots(valid);
+      })
       .catch((e) => setError((e as Error).message))
       .finally(() => setLoading(false));
   }, [bookingType]);
@@ -97,7 +123,14 @@ export function BookFlow({ bookingType }: Props) {
       <Progress value={(step / 4) * 100} className="h-1.5 mb-6" />
       <ErrorMessage message={error} />
 
-      {step === 1 && (
+      {hasActiveBooking && (
+        <Card className="p-6 mb-6 bg-destructive/10 text-destructive border-destructive/20">
+          <h2 className="font-bold text-lg mb-2">تنبيه: يوجد حجز نشط</h2>
+          <p>لا يمكنك حجز موعد جديد حالياً لأن لديك حجز قيد الانتظار أو أنت قيد العلاج في عيادة أخرى. يرجى إتمام حجزك الحالي أو إالغائه أولاً.</p>
+        </Card>
+      )}
+
+      {step === 1 && !hasActiveBooking && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
           <h2 className="font-bold flex items-center gap-2"><Calendar className="h-5 w-5" /> {t("booking.selectSlot")}</h2>
           {grouped.length === 0 ? (

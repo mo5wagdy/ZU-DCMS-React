@@ -58,6 +58,7 @@ export default function PatientDashboard() {
     try {
       await bookingApi.cancel({ bookingId: id, patientId: patientQ.data?.id || 0 });
       setOverrides((s) => ({ ...s, [id]: BookingStatus.Cancelled }));
+      useUIStore.getState().triggerRefresh();
       toast.success(t("booking.cancelled"));
     } catch (e) {
       toast.error((e as Error).message);
@@ -148,9 +149,8 @@ export default function PatientDashboard() {
           {items.map((b) => {
             const status = overrides[b.id] ?? b.status;
             const canCancel =
-              (status === BookingStatus.Pending ||
-                status === BookingStatus.Confirmed) &&
-              b.paymentStatus === 0;
+              status === BookingStatus.Pending ||
+              status === BookingStatus.Confirmed;
             return (
               <Card key={b.id} className="p-5 card-hover">
                 <div className="flex flex-wrap items-center justify-between gap-3">
