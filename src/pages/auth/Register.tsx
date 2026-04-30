@@ -5,7 +5,7 @@ import { z } from "zod";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader2, Eye, EyeOff } from "lucide-react";
 import { AuthLayout } from "@/components/shared/AuthLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -94,6 +94,7 @@ export default function Register() {
   
   const [selectedCountryIso, setSelectedCountryIso] = useState<string>("EG");
   const [selectedStateIso, setSelectedStateIso] = useState<string>("");
+  const [showId, setShowId] = useState(false);
 
   const Prev = isRTL ? ArrowRight : ArrowLeft;
   const Next = isRTL ? ArrowLeft : ArrowRight;
@@ -215,7 +216,21 @@ export default function Register() {
               </div>
               <div>
                 <Label>{t("auth.identityNumber")}</Label>
-                <Input className="mt-1" dir="ltr" type="password" {...register("identityNumber")} />
+                <div className="relative mt-1">
+                  <Input
+                    dir="ltr"
+                    type={showId ? "text" : "password"}
+                    {...register("identityNumber")}
+                    className="pe-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowId(!showId)}
+                    className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    {showId ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
                 {watch("identityType") === IdentityType.NationalId && (
                   <p className="text-[10px] text-accent mt-1">يجب إدخال 14 رقم صحيح</p>
                 )}

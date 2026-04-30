@@ -313,6 +313,7 @@
     "cancelled": "ملغي",
     "postponed": "مؤجل",
     "completed": "مكتمل",
+    "delayed": "متأخر (إعادة جدولة)",
     "active": "نشط",
     "inactive": "غير نشط",
     "inProgress": "قيد التنفيذ",

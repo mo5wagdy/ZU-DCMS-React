@@ -27,7 +27,7 @@ import { useFetch } from "@/hooks/useFetch";
 import { useUIStore } from "@/store/ui.store";
 import { patientApi } from "@/api/patient.api";
 import { bookingApi } from "@/api/booking.api";
-import { formatDate, formatTime12h } from "@/utils/format";
+import { formatDate, formatTime12h, formatSessionRange } from "@/utils/format";
 import { BookingStatus } from "@/utils/enum";
 import { toast } from "sonner";
 import type { BookingDto } from "@/types";
@@ -44,7 +44,7 @@ const PAGE_SIZE = 8;
 export default function MyBookings() {
   const { t } = useTranslation();
   const { userId } = useAuth();
-  const lang = useUIStore((s) => s.language);
+  const { language: lang, refreshTick } = useUIStore();
 
   const [filter, setFilter] = useState<FilterKey>("all");
   const [page, setPage] = useState(1);
@@ -53,7 +53,7 @@ export default function MyBookings() {
   // Resolve patient → fetch their paged bookings.
   const patientQ = useFetch(
     () => (userId ? patientApi.byUserId(userId) : Promise.resolve(null as never)),
-    [userId]
+    [userId, refreshTick]
   );
 
   const bookingsQ = useFetch(
@@ -66,7 +66,7 @@ export default function MyBookings() {
             sortDescending: true,
           })
         : Promise.resolve(null as never),
-    [patientQ.data?.id, page]
+    [patientQ.data?.id, page, refreshTick]
   );
 
   const filtered = useMemo(() => {
@@ -217,8 +217,7 @@ function BookingRow({
             </div>
             <div className="text-sm text-muted-foreground">
               {formatDate(booking.sessionDate, lang)} ·{" "}
-              {formatTime12h(booking.sessionStartTime, lang)} -{" "}
-              {formatTime12h(booking.sessionEndTime, lang)}
+              {formatSessionRange(booking.sessionStartTime, booking.sessionEndTime, lang)}
             </div>
             {booking.preliminaryComplaint && (
               <>

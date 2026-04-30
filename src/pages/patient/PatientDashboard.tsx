@@ -15,7 +15,7 @@ import { bookingApi } from "@/api/booking.api";
 import { useAuth } from "@/hooks/useAuth";
 import { useUIStore } from "@/store/ui.store";
 import { useFetch } from "@/hooks/useFetch";
-import { formatDate, formatTime12h } from "@/utils/format";
+import { formatDate, formatTime12h, formatSessionRange } from "@/utils/format";
 import { BookingStatus, BookingType } from "@/utils/enum";
 import { toast } from "sonner";
 import { useState } from "react";
@@ -178,8 +178,7 @@ export default function PatientDashboard() {
                     </div>
                     <div className="text-sm text-muted-foreground">
                       {formatDate(b.sessionDate, lang)} ·{" "}
-                      {formatTime12h(b.sessionStartTime, lang)} -{" "}
-                      {formatTime12h(b.sessionEndTime, lang)}
+                      {formatSessionRange(b.sessionStartTime, b.sessionEndTime, lang)}
                     </div>
                     {b.preliminaryComplaint && (
                       <>

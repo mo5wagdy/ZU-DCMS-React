@@ -29,6 +29,16 @@ export function formatTime12h(time: string, lang: "ar" | "en" = "ar"): string {
   }
 }
 
+export function formatSessionRange(startTime: string, endTime: string, lang: "ar" | "en" = "ar"): string {
+  if (!startTime || !endTime) return "";
+  const start = formatTime12h(startTime, lang);
+  const end = formatTime12h(endTime, lang);
+  if (lang === "ar") {
+    return `من ${start} إلى ${end}`;
+  }
+  return `${start} – ${end}`;
+}
+
 export function formatPhone(phone: string): string {
   if (!phone) return "";
   const cleaned = phone.replace(/\D/g, "");

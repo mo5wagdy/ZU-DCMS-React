@@ -5,7 +5,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, Eye, EyeOff } from "lucide-react";
 import { AuthLayout } from "@/components/shared/AuthLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,6 +30,7 @@ export default function PatientLogin() {
   const [params] = useSearchParams();
   const { setAuth } = useAuth();
   const [error, setError] = useState<string | null>(null);
+  const [showId, setShowId] = useState(false);
 
   const {
     register,
@@ -105,13 +106,22 @@ export default function PatientLogin() {
         </div>
         <div>
           <Label htmlFor="identity">{t("auth.identityPasswordHint")}</Label>
-          <Input
-            id="identity"
-            type="password"
-            autoComplete="current-password"
-            {...register("identityNumber")}
-            className="mt-1"
-          />
+          <div className="relative mt-1">
+            <Input
+              id="identity"
+              type={showId ? "text" : "password"}
+              autoComplete="current-password"
+              {...register("identityNumber")}
+              className="pe-10"
+            />
+            <button
+              type="button"
+              onClick={() => setShowId(!showId)}
+              className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            >
+              {showId ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
           {errors.identityNumber && (
             <p className="text-xs text-destructive mt-1">{errors.identityNumber.message}</p>
           )}

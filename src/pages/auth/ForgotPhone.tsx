@@ -26,8 +26,15 @@ const schema = z.object({
 });
 type FormVals = z.infer<typeof schema>;
 
+const identityTypes = [
+  { value: 1, labelAr: "رقم قومي", labelEn: "National ID" },
+  { value: 2, labelAr: "جواز سفر", labelEn: "Passport" },
+  { value: 3, labelAr: "رقم إقامة", labelEn: "Residence Permit" },
+];
+
 export default function ForgotPhone() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language.startsWith("ar") ? "ar" : "en";
   const [error, setError] = useState<string | null>(null);
   const [maskedPhone, setMaskedPhone] = useState<string | null>(null);
 
@@ -35,10 +42,11 @@ export default function ForgotPhone() {
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<FormVals>({
     resolver: zodResolver(schema),
-    defaultValues: { identityType: String(IdentityType.NationalId) },
+    defaultValues: { identityType: "1" },
   });
 
   const onSubmit = async (vals: FormVals) => {
@@ -80,16 +88,18 @@ export default function ForgotPhone() {
           <div>
             <Label>{t("auth.identityType")}</Label>
             <Select
-              defaultValue={String(IdentityType.NationalId)}
+              defaultValue="1"
               onValueChange={(v) => setValue("identityType", v)}
             >
               <SelectTrigger className="mt-1">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="0">{t("identityType.0")}</SelectItem>
-                <SelectItem value="1">{t("identityType.1")}</SelectItem>
-                <SelectItem value="2">{t("identityType.2")}</SelectItem>
+                {identityTypes.map((it) => (
+                  <SelectItem key={it.value} value={String(it.value)}>
+                    {lang === "ar" ? it.labelAr : it.labelEn}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

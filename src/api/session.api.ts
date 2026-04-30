@@ -33,10 +33,10 @@ export const sessionApi = {
         daysCount,
       }) as any
     ),
-  patients: (sessionId: number, internDoctorId: string) =>
+  patients: (sessionId: number, InternDoctorId: string) =>
     call<PagedResult<BookingForDiagnosisDto>>(
       api.get<ApiResponse<PagedResult<BookingForDiagnosisDto>>>("/sessions/patients", {
-        params: { sessionId, internDoctorId },
+        params: { sessionId, InternDoctorId },
       }) as any
     ),
   getToday: () =>

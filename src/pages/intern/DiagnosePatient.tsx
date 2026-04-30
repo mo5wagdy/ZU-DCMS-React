@@ -90,7 +90,7 @@ export default function DiagnosePatient() {
     setSubmitting(true);
     try {
       const result = await diagnosisApi.diagnose({
-        internDoctorId: userId || "",
+        InternDoctorId: userId || "",
         dto: {
           bookingId: Number(bookingId),
           clinicId: values.clinicId,
@@ -304,7 +304,7 @@ function AssignStudentPanel({
     setError(null);
     try {
       await diagnosisApi.assign({
-        internDoctorId: userId || "",
+        InternDoctorId: userId || "",
         dto: { diagnosisId: diagnosis.id, studentId }
       });
       toast({ title: t("intern.assignSuccess") });

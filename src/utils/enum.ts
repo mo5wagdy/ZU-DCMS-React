@@ -34,6 +34,7 @@ export const BookingStatus = {
   Cancelled: 3,
   Postponed: 4,
   Completed: 5,
+  Delayed: 6,
 } as const;
 
 export const CaseStatus = {
@@ -58,7 +59,15 @@ export function arrayToFlags(values: number[]): number {
 }
 
 export function bookingStatusKey(status: number): string {
-  return ["pending", "confirmed", "cancelled", "postponed", "completed"][status] ?? "pending";
+  const map: Record<number, string> = {
+    1: "pending",
+    2: "confirmed",
+    3: "cancelled",
+    4: "postponed",
+    5: "completed",
+    6: "delayed",
+  };
+  return map[status] ?? "pending";
 }
 
 export function caseStatusKey(status: number): string {

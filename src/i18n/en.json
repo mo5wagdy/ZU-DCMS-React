@@ -310,6 +310,7 @@
     "cancelled": "Cancelled",
     "postponed": "Postponed",
     "completed": "Completed",
+    "delayed": "Delayed (Re-scheduled)",
     "active": "Active",
     "inactive": "Inactive",
     "inProgress": "In Progress",

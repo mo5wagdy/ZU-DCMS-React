@@ -8,7 +8,7 @@ import type {
 
 export const diagnosisApi = {
   diagnose: (cmd: {
-    internDoctorId: string;
+    InternDoctorId: string;
     dto: {
       bookingId: number;
       clinicId: number;
@@ -27,7 +27,7 @@ export const diagnosisApi = {
       }) as any
     ),
   assign: (cmd: {
-    internDoctorId: string;
+    InternDoctorId: string;
     dto: { diagnosisId: number; studentId: number };
   }) =>
     call<CaseAssignmentDto>(

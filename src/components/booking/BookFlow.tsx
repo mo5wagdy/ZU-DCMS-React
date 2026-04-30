@@ -15,7 +15,7 @@ import { bookingApi } from "@/api/booking.api";
 import { patientApi } from "@/api/patient.api";
 import { useAuth } from "@/hooks/useAuth";
 import { useUIStore } from "@/store/ui.store";
-import { formatDate, formatTime, formatTime12h } from "@/utils/format";
+import { formatDate, formatTime, formatTime12h, formatSessionRange } from "@/utils/format";
 import { cn } from "@/lib/utils";
 import type { AvailableSlotDto, BookingDto } from "@/types";
 import { toast } from "sonner";
@@ -28,7 +28,7 @@ export function BookFlow({ bookingType }: Props) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { userId } = useAuth();
-  const lang = useUIStore((s) => s.language);
+  const { language: lang, triggerRefresh } = useUIStore();
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [slots, setSlots] = useState<AvailableSlotDto[]>([]);
   const [loading, setLoading] = useState(true);
@@ -72,6 +72,7 @@ export function BookFlow({ bookingType }: Props) {
         }
       });
       setCreatedBooking(data);
+      triggerRefresh();
       setStep(4);
     } catch (e) {
       setError((e as Error).message);
@@ -124,7 +125,7 @@ export function BookFlow({ bookingType }: Props) {
                       >
                         <div className="flex items-center gap-1.5 font-semibold">
                           <Clock className="h-4 w-4 text-primary" />
-                          <span dir="ltr">{formatTime12h(s.startTime, lang)} - {formatTime12h(s.endTime, lang)}</span>
+                          <span dir="ltr">{formatSessionRange(s.startTime, s.endTime, lang)}</span>
                         </div>
                         {isFull ? (
                           <Badge variant="outline" className="mt-2 bg-destructive/10 text-destructive border-destructive/20">
@@ -150,7 +151,7 @@ export function BookFlow({ bookingType }: Props) {
           <Card className="p-5 bg-secondary/30">
             <div className="text-xs text-muted-foreground mb-1">{t("booking.selectSlot")}</div>
             <div className="font-bold">{formatDate(selected.date, lang)}</div>
-            <div className="text-sm" dir="ltr">{formatTime12h(selected.startTime, lang)} - {formatTime12h(selected.endTime, lang)}</div>
+            <div className="text-sm">{formatSessionRange(selected.startTime, selected.endTime, lang)}</div>
           </Card>
           <div>
             <label className="block text-sm font-semibold mb-2">{t("booking.complaint")}</label>
@@ -177,7 +178,7 @@ export function BookFlow({ bookingType }: Props) {
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div><div className="text-muted-foreground">{t("booking.type")}</div><div className="font-semibold">{bookingType === 1 ? t("booking.new") : t("booking.followUp")}</div></div>
               <div><div className="text-muted-foreground">{t("booking.date")}</div><div className="font-semibold">{formatDate(selected.date, lang)}</div></div>
-              <div className="col-span-2"><div className="text-muted-foreground">{t("booking.time")}</div><div className="font-semibold" dir="ltr">{formatTime12h(selected.startTime, lang)} - {formatTime12h(selected.endTime, lang)}</div></div>
+              <div className="col-span-2"><div className="text-muted-foreground">{t("booking.time")}</div><div className="font-semibold">{formatSessionRange(selected.startTime, selected.endTime, lang)}</div></div>
               {complaint && <div className="col-span-2"><div className="text-muted-foreground">{t("booking.complaint")}</div><div className="text-sm">{complaint}</div></div>}
             </div>
           </Card>
