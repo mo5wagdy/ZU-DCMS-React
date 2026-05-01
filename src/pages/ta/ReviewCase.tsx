@@ -56,7 +56,7 @@ export default function ReviewCase() {
   const navigate = useNavigate();
   const { userId } = useAuth();
   const { caseId } = useParams<{ caseId: string }>();
-  const lang = useUIStore((s) => s.language);
+  const { language: lang, refreshTick } = useUIStore();
 
   const [data, setData] = useState<CaseAssignmentDto | null>(null);
   const [loading, setLoading] = useState(true);
@@ -79,7 +79,7 @@ export default function ReviewCase() {
     return () => {
       mounted = false;
     };
-  }, [caseId]);
+  }, [caseId, refreshTick]);
 
   const handleApprove = async () => {
     if (!data) return;

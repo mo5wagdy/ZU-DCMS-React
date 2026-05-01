@@ -13,6 +13,7 @@ import { Breadcrumbs } from "@/components/shared/Breadcrumbs";
 import { studentApi } from "@/api/student.api";
 import { termApi } from "@/api/term.api";
 import { caseApi } from "@/api/case.api";
+import { useUIStore } from "@/store/ui.store";
 import type { StudentDto, StudentProgressDto } from "@/types";
 
 /**
@@ -22,6 +23,7 @@ import type { StudentDto, StudentProgressDto } from "@/types";
  */
 export default function ViewStudentDetail() {
   const { t } = useTranslation();
+  const { refreshTick } = useUIStore();
   const { id } = useParams<{ id: string }>();
   const studentId = Number(id);
 
@@ -56,7 +58,7 @@ export default function ViewStudentDetail() {
     return () => {
       mounted = false;
     };
-  }, [studentId]);
+  }, [studentId, refreshTick]);
 
   return (
     <div className="container py-8 max-w-4xl space-y-6">

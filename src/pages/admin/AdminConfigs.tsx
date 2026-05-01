@@ -10,11 +10,13 @@ import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { ErrorMessage } from "@/components/shared/ErrorMessage";
 import { adminApi } from "@/api/admin.api";
 import { useAuth } from "@/hooks/useAuth";
+import { useUIStore } from "@/store/ui.store";
 import type { SystemConfigDto } from "@/types";
 
 export default function AdminConfigs() {
   const { t, i18n } = useTranslation();
   const { userId } = useAuth();
+  const { refreshTick } = useUIStore();
   const [configs, setConfigs] = useState<SystemConfigDto[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -37,7 +39,7 @@ export default function AdminConfigs() {
     return () => {
       mounted = false;
     };
-  }, [reload]);
+  }, [reload, refreshTick]);
 
   const labelFor = (key: string) => {
     const k = `admin.configKey.${key}`;

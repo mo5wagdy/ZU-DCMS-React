@@ -33,7 +33,7 @@ import { toEnglishDigits } from "@/utils/format";
 const schema = z
   .object({
     fullName: z.string().trim().min(3, { message: "الاسم قصير" }).max(100),
-    username: z.string().trim().min(3).max(50).regex(/^[a-zA-Z0-9._-]+$/, { message: "اسم المستخدم غير صالح" }),
+    username: z.string().trim().min(3).max(50).regex(/^[\u0600-\u06FFa-zA-Z0-9._-]+$/, { message: "اسم المستخدم غير صالح" }),
     phoneNumber: z
       .string()
       .trim()
@@ -91,7 +91,11 @@ export default function Register() {
   const gender = watch("gender");
   const conditions = watch("chronicConditions") || [];
 
-  const goNext = async () => {
+  const goNext = async (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     const fields: (keyof FormVals)[][] = [
       [],
       ["fullName", "username", "phoneNumber", "identityType", "identityNumber", "dateOfBirth", "gender"],
@@ -104,7 +108,7 @@ export default function Register() {
 
   const onSubmit = async (vals: FormVals) => {
     if (step < 3) {
-      goNext();
+      await goNext();
       return;
     }
     setError(null);
@@ -341,17 +345,30 @@ export default function Register() {
 
         <div className="flex justify-between pt-2 gap-3">
           {step > 1 ? (
-            <Button type="button" variant="outline" onClick={() => setStep((s) => s - 1)}>
+            <Button
+              key="prev-btn"
+              type="button"
+              variant="outline"
+              onClick={() => setStep((s) => s - 1)}
+            >
               <Prev className="h-4 w-4 me-1" /> {t("common.previous")}
             </Button>
           ) : <span />}
 
           {step < 3 ? (
-            <Button type="button" onClick={goNext}>
+            <Button
+              key="next-btn"
+              type="button"
+              onClick={(e) => goNext(e)}
+            >
               {t("common.next")} <Next className="h-4 w-4 ms-1" />
             </Button>
           ) : (
-            <Button type="submit" disabled={isSubmitting}>
+            <Button
+              key="submit-btn"
+              type="submit"
+              disabled={isSubmitting}
+            >
               {isSubmitting && <Loader2 className="h-4 w-4 me-2 animate-spin" />}
               {t("auth.registerBtn")}
             </Button>

@@ -25,7 +25,7 @@ import { getLocalizedName } from "@/utils/location";
 export default function PatientProfile() {
   const { t } = useTranslation();
   const { userId } = useAuth();
-  const lang = useUIStore((s) => s.language);
+  const { language: lang, refreshTick } = useUIStore();
   const [patient, setPatient] = useState<PatientDto | null>(null);
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -70,7 +70,7 @@ export default function PatientProfile() {
       .catch((e) => setError((e as Error).message))
       .finally(() => setLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId]);
+  }, [userId, refreshTick]);
 
   const save = async () => {
     setSaving(true);
@@ -88,6 +88,7 @@ export default function PatientProfile() {
       });
       setPatient(updated);
       setEditing(false);
+      useUIStore.getState().triggerRefresh();
       toast.success(t("common.save"));
     } catch (e) {
       setError((e as Error).message);

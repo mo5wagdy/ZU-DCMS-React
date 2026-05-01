@@ -4,11 +4,13 @@ import { Stethoscope } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { ErrorMessage } from "@/components/shared/ErrorMessage";
+import { useUIStore } from "@/store/ui.store";
 import { adminApi } from "@/api/admin.api";
 import type { ClinicDto } from "@/types";
 
 export default function AdminClinics() {
   const { t } = useTranslation();
+  const { refreshTick } = useUIStore();
   const [data, setData] = useState<ClinicDto[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -24,7 +26,7 @@ export default function AdminClinics() {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [refreshTick]);
 
   return (
     <div className="container py-8 max-w-4xl space-y-6">

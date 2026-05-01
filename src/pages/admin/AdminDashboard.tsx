@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useUIStore } from "@/store/ui.store";
 import { Link } from "react-router-dom";
 import {
   Users,
@@ -23,6 +24,7 @@ interface Stats {
 
 export default function AdminDashboard() {
   const { t } = useTranslation();
+  const { refreshTick } = useUIStore();
   const [stats, setStats] = useState<Stats>({ configs: null, terms: null });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -40,7 +42,7 @@ export default function AdminDashboard() {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [refreshTick]);
 
   const activeTerm = stats.terms?.find((x) => x.isActive);
 

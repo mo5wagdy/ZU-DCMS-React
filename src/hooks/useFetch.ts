@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useUIStore } from "@/store/ui.store";
 
 /**
  * Generic data-fetching hook.
@@ -18,6 +19,7 @@ export function useFetch<T>(
   const [error, setError] = useState<string | null>(null);
   // bumping this triggers a refetch via the deps array
   const [tick, setTick] = useState(0);
+  const globalTick = useUIStore((s) => s.refreshTick);
   const aliveRef = useRef(true);
 
   useEffect(() => {
@@ -38,7 +40,7 @@ export function useFetch<T>(
       aliveRef.current = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [...deps, tick]);
+  }, [...deps, tick, globalTick]);
 
   return {
     data,

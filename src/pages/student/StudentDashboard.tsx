@@ -16,12 +16,14 @@ import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { ErrorMessage } from "@/components/shared/ErrorMessage";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { useStudentContext } from "@/hooks/useStudentContext";
+import { useUIStore } from "@/store/ui.store";
 import { caseApi } from "@/api/case.api";
 import { CaseStatus } from "@/utils/enum";
 import type { CaseAssignmentDto, StudentProgressDto } from "@/types";
 
 export default function StudentDashboard() {
   const { t } = useTranslation();
+  const { refreshTick } = useUIStore();
   const { student, term, loading, error } = useStudentContext();
   const [cases, setCases] = useState<CaseAssignmentDto[] | null>(null);
   const [todayQueue, setTodayQueue] = useState<CaseAssignmentDto[] | null>(null);
@@ -48,7 +50,7 @@ export default function StudentDashboard() {
     return () => {
       mounted = false;
     };
-  }, [student, term]);
+  }, [student, term, refreshTick]);
 
   if (loading) return <LoadingSpinner fullPage />;
   if (error || !student) {

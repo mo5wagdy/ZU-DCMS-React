@@ -31,13 +31,15 @@ import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { ErrorMessage } from "@/components/shared/ErrorMessage";
 import { Pagination } from "@/components/shared/Pagination";
 import { adminApi } from "@/api/admin.api";
+import { useUIStore } from "@/store/ui.store";
 import { CreatableRoles } from "@/utils/roles";
 import { formatDate } from "@/utils/format";
+import { toEnglishDigits } from "@/utils/format";
 import type { PagedResult, StaffUsersDto } from "@/types";
 
 const userSchema = z.object({
   fullName: z.string().trim().min(3, "min 3"),
-  username: z.string().trim().min(3, "min 3"),
+  username: z.string().trim().min(3, "min 3").regex(/^[\u0600-\u06FFa-zA-Z0-9._-]+$/, "invalid"),
   email: z.string().trim().email("invalid"),
   phoneNumber: z.string().trim().min(5, "required"),
   password: z.string().min(8, "min 8"),
@@ -60,6 +62,7 @@ export default function AdminUsers() {
   const [error, setError] = useState<string | null>(null);
   const [openCreate, setOpenCreate] = useState(false);
   const [reload, setReload] = useState(0);
+  const { refreshTick } = useUIStore();
 
   useEffect(() => {
     let mounted = true;
@@ -81,7 +84,7 @@ export default function AdminUsers() {
     return () => {
       mounted = false;
     };
-  }, [page, search, role, reload]);
+  }, [page, search, role, reload, refreshTick]);
 
   const onSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -111,6 +114,7 @@ export default function AdminUsers() {
           <CreateUserDialog
             onCreated={() => {
               setOpenCreate(false);
+              useUIStore.getState().triggerRefresh();
               setReload((r) => r + 1);
             }}
           />
@@ -263,10 +267,10 @@ function CreateUserDialog({ onCreated }: { onCreated: () => void }) {
           username: vals.username,
           fullName: vals.fullName,
           email: vals.email,
-          phoneNumber: vals.phoneNumber,
+          phoneNumber: toEnglishDigits(vals.phoneNumber),
           password: vals.password,
           role: vals.role,
-          academicYear: showAcademicYear ? vals.academicYear : undefined,
+          academicYear: showAcademicYear ? Number(toEnglishDigits(String(vals.academicYear))) : undefined,
         }
       });
       toast.success(t("admin.userCreated"));

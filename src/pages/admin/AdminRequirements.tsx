@@ -13,6 +13,7 @@ import { studentApi } from "@/api/student.api";
 import { termApi } from "@/api/term.api";
 import { lookupApi } from "@/api/lookup.api";
 import { useAuth } from "@/hooks/useAuth";
+import { useUIStore } from "@/store/ui.store";
 import type { StudentDto, TermDto, StudentRequirementDto, ClinicDto } from "@/types";
 // Removed lookupApi import as per user instruction
 
@@ -20,6 +21,7 @@ import type { StudentDto, TermDto, StudentRequirementDto, ClinicDto } from "@/ty
 export default function AdminRequirements() {
   const { t } = useTranslation();
   const { userId } = useAuth();
+  const { refreshTick } = useUIStore();
   const [students, setStudents] = useState<StudentDto[]>([]);
   const [term, setTerm] = useState<TermDto | null>(null);
   const [clinics, setClinics] = useState<ClinicDto[]>([]);
@@ -55,7 +57,7 @@ export default function AdminRequirements() {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [refreshTick]);
 
   // load requirements when student selected
   useEffect(() => {
@@ -110,6 +112,7 @@ export default function AdminRequirements() {
         requirements,
       });
       toast.success(t("admin.requirementsUpdated"));
+      useUIStore.getState().triggerRefresh();
     } catch (e) {
       toast.error((e as Error).message);
     } finally {

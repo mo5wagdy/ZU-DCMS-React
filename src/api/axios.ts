@@ -1,4 +1,5 @@
 import axios, { type AxiosError, type AxiosInstance, type InternalAxiosRequestConfig } from "axios";
+import i18next from "i18next";
 import { useAuthStore } from "@/store/auth.store";
 
 const BASE_URL = (import.meta.env.VITE_API_URL || "https://localhost:7125") + "/api/v1";
@@ -14,6 +15,10 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  
+  // Set language
+  config.headers["Accept-Language"] = i18next.language || "ar-EG";
+  
   return config;
 });
 

@@ -61,7 +61,7 @@ export default function CaseDetail() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const { student, term } = useStudentContext();
-  const lang = useUIStore((s) => s.language);
+  const { language: lang, refreshTick } = useUIStore();
   const [data, setData] = useState<CaseAssignmentDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -85,7 +85,7 @@ export default function CaseDetail() {
   useEffect(() => {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  }, [id, refreshTick]);
 
   const handleSubmit = async () => {
     try {
@@ -94,6 +94,7 @@ export default function CaseDetail() {
         caseAssignmentId: data.id,
       });
       toast({ title: t("student.submittedSuccess") });
+      useUIStore.getState().triggerRefresh();
       setShowSubmit(false);
       load();
     } catch (e) {
@@ -396,6 +397,7 @@ function AddSessionDialog({
         }
       });
       toast({ title: t("student.sessionAdded") });
+      useUIStore.getState().triggerRefresh();
       onOpenChange(false);
       onSuccess();
     } catch (e) {

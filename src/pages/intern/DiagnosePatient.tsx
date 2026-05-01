@@ -31,6 +31,7 @@ import { ErrorMessage } from "@/components/shared/ErrorMessage";
 import { diagnosisApi } from "@/api/diagnosis.api";
 import { lookupApi } from "@/api/lookup.api";
 import { useAuth } from "@/hooks/useAuth";
+import { useUIStore } from "@/store/ui.store";
 import type { DiagnosisRecordDto, StudentPriorityDto, ClinicDto, DiagnosisTypeDto } from "@/types";
 
 
@@ -101,6 +102,7 @@ export default function DiagnosePatient() {
       });
       setDiagnosis(result);
       toast({ title: t("intern.diagnosisSaved") });
+      useUIStore.getState().triggerRefresh();
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       setError(msg);
@@ -285,6 +287,7 @@ function AssignStudentPanel({
 }) {
   const { t } = useTranslation();
   const { userId } = useAuth();
+  const { refreshTick } = useUIStore();
   const [students, setStudents] = useState<StudentPriorityDto[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [assigning, setAssigning] = useState<number | null>(null);
@@ -297,7 +300,7 @@ function AssignStudentPanel({
       .then((data) => setStudents(data ?? []))
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
-  }, []);
+  }, [refreshTick]);
 
   const handleAssign = async (studentId: number) => {
     setAssigning(studentId);
@@ -308,6 +311,7 @@ function AssignStudentPanel({
         dto: { diagnosisId: diagnosis.id, studentId }
       });
       toast({ title: t("intern.assignSuccess") });
+      useUIStore.getState().triggerRefresh();
       onDone();
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
