@@ -101,6 +101,8 @@ export interface PatientDto {
   otherConditions?: string;
   address?: string;
   isActive: boolean;
+  hasActiveBooking: boolean;
+  hasActiveCase: boolean;
 }
 
 export interface UpdatePatientDto {

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
-import { CalendarPlus, RotateCw, User, ListChecks } from "lucide-react";
+import { CalendarPlus, RotateCw, User, ListChecks, Info } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -91,22 +91,46 @@ export default function PatientDashboard() {
         </motion.div>
       )}
 
-      {/* Quick actions */}
+      {/* Booking Block Alert */}
+      {patientQ.data && (patientQ.data.hasActiveBooking || patientQ.data.hasActiveCase) && (
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }} 
+          animate={{ opacity: 1, scale: 1 }}
+          className="mb-8 p-4 rounded-xl bg-accent/10 border border-accent/20 flex items-center gap-4 text-accent"
+        >
+          <div className="h-10 w-10 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
+            <Info className="h-5 w-5" />
+          </div>
+          <div>
+            <p className="font-bold text-sm">
+              {patientQ.data.hasActiveBooking ? t("booking.activeBookingTitle") : t("booking.activeCaseTitle")}
+            </p>
+            <p className="text-xs opacity-80 mt-0.5">
+              {patientQ.data.hasActiveBooking ? t("booking.activeBookingDesc") : t("booking.activeCaseDesc")}
+            </p>
+          </div>
+        </motion.div>
+      )}
+
       <div className="grid sm:grid-cols-3 gap-4 mb-10">
-        <QuickAction
-          to="/booking/new"
-          icon={<CalendarPlus className="h-5 w-5" />}
-          title={t("landing.bookNew")}
-          desc={t("landing.bookNewDesc")}
-          accent="primary"
-        />
-        <QuickAction
-          to="/booking/followup"
-          icon={<RotateCw className="h-5 w-5" />}
-          title={t("landing.followUp")}
-          desc={t("landing.followUpDesc")}
-          accent="gold"
-        />
+        {patientQ.data && !patientQ.data.hasActiveBooking && !patientQ.data.hasActiveCase && (
+          <>
+            <QuickAction
+              to="/booking/new"
+              icon={<CalendarPlus className="h-5 w-5" />}
+              title={t("landing.bookNew")}
+              desc={t("landing.bookNewDesc")}
+              accent="primary"
+            />
+            <QuickAction
+              to="/booking/followup"
+              icon={<RotateCw className="h-5 w-5" />}
+              title={t("landing.followUp")}
+              desc={t("landing.followUpDesc")}
+              accent="gold"
+            />
+          </>
+        )}
         <QuickAction
           to="/patient/profile"
           icon={<User className="h-5 w-5" />}
@@ -134,12 +158,14 @@ export default function PatientDashboard() {
           title={t("booking.noBookings")}
           description={t("booking.noBookingsDesc")}
           action={
-            <Button asChild size="sm">
-              <Link to="/booking/new">
-                <CalendarPlus className="h-4 w-4 me-1" />
-                {t("booking.newAppointment")}
-              </Link>
-            </Button>
+            !patientQ.data?.hasActiveBooking && !patientQ.data?.hasActiveCase && (
+              <Button asChild size="sm">
+                <Link to="/booking/new">
+                  <CalendarPlus className="h-4 w-4 me-1" />
+                  {t("booking.newAppointment")}
+                </Link>
+              </Button>
+            )
           }
         />
       )}

@@ -52,6 +52,16 @@ const schema = z
     email: z.string().trim().email().optional().or(z.literal("")),
     chronicConditions: z.array(z.number()).default([]),
     otherConditions: z.string().max(500).optional().or(z.literal("")),
+  }).superRefine((data, ctx) => {
+    if (data.identityType === IdentityType.NationalId) {
+      if (data.identityNumber.length !== 14 || !/^\d+$/.test(data.identityNumber)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "الرقم القومي المصري يجب أن يكون 14 رقم صحيح",
+          path: ["identityNumber"],
+        });
+      }
+    }
   });
 type FormVals = z.infer<typeof schema>;
 
@@ -200,18 +210,18 @@ export default function Register() {
                     dir="ltr"
                     type={showId ? "text" : "password"}
                     {...register("identityNumber")}
-                    className="pe-10"
+                    className="pr-10" // Use physical padding for LTR input
                   />
                   <button
                     type="button"
                     onClick={() => setShowId(!showId)}
-                    className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" // Use physical position
                   >
                     {showId ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
                 {watch("identityType") === IdentityType.NationalId && (
-                  <p className="text-[10px] text-accent mt-1">يجب إدخال 14 رقم صحيح</p>
+                  <p className="text-[10px] text-accent mt-1">يجب إدخال 14 رقم صحيح (للمصريين فقط)</p>
                 )}
               </div>
             </div>

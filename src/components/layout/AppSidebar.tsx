@@ -31,6 +31,8 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/hooks/useAuth";
+import { useFetch } from "@/hooks/useFetch";
+import { patientApi } from "@/api/patient.api";
 
 interface NavItem {
   to: string;
@@ -92,12 +94,26 @@ function itemsForRole(role: string | null): NavItem[] {
 
 export function AppSidebar() {
   const { t } = useTranslation();
-  const { role } = useAuth();
+  const { role, userId } = useAuth();
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const location = useLocation();
 
-  const items = itemsForRole(role);
+  const patientQ = useFetch(
+    () => (role?.toLowerCase() === "patient" && userId ? patientApi.byUserId(userId) : Promise.resolve(null as never)),
+    [userId, role]
+  );
+
+  const canBook = !patientQ.data?.hasActiveBooking && !patientQ.data?.hasActiveCase;
+
+  const rawItems = itemsForRole(role);
+  const items = rawItems.filter(item => {
+    if (item.to === "/booking/new" || item.to === "/booking/followup") {
+      return canBook;
+    }
+    return true;
+  });
+
   if (items.length === 0) return null;
 
   const isActive = (path: string) =>

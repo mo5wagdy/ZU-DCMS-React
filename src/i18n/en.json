@@ -56,7 +56,7 @@
     "governorate": "Governorate"
   },
   "identityType": {
-    "1": "National ID",
+    "1": "National ID (Egyptians Only)",
     "2": "Passport",
     "3": "Residence Permit"
   },
@@ -102,7 +102,11 @@
       "cancelled": "Cancelled"
     },
     "back": "Back",
-    "next": "Next"
+    "next": "Next",
+    "activeBookingTitle": "You have an active booking",
+    "activeBookingDesc": "You cannot make a new booking until the current one is completed or cancelled.",
+    "activeCaseTitle": "You have an active treatment case",
+    "activeCaseDesc": "You cannot make a new booking while you are currently being treated by a student."
   },
   "patient": {
     "dashboard": "Patient Dashboard",
