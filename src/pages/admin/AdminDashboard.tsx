@@ -95,9 +95,13 @@ export default function AdminDashboard() {
               title={t("admin.activeTerm")}
               value={activeTerm?.name ?? "—"}
               hint={
-                activeTerm
-                  ? `${activeTerm.startDate?.slice(0, 10)} → ${activeTerm.endDate?.slice(0, 10)}`
-                  : undefined
+                activeTerm ? (
+                  <div className="flex items-center gap-1">
+                    <span>{activeTerm.startDate?.slice(0, 10)}</span>
+                    <ArrowRight className="h-3 w-3 rtl-flip opacity-70" />
+                    <span>{activeTerm.endDate?.slice(0, 10)}</span>
+                  </div>
+                ) : undefined
               }
             />
             <StatCard
@@ -138,7 +142,7 @@ export default function AdminDashboard() {
   );
 }
 
-function StatCard({ title, value, hint }: { title: string; value: string; hint?: string }) {
+function StatCard({ title, value, hint }: { title: string; value: string; hint?: React.ReactNode }) {
   return (
     <Card>
       <CardHeader className="pb-2">

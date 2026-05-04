@@ -20,15 +20,19 @@ export const diagnosisApi = {
     call<DiagnosisRecordDto>(
       api.post<ApiResponse<DiagnosisRecordDto>>("/diagnosis", cmd) as any
     ),
-  availableStudents: (clinicId?: number, termId?: number) =>
+  getByBooking: (bookingId: number) =>
+    call<DiagnosisRecordDto>(
+      api.get<ApiResponse<DiagnosisRecordDto>>(`/diagnosis/booking/${bookingId}`) as any
+    ),
+  availableStudents: (clinicId?: number, termId?: number, searchTerm?: string) =>
     call<StudentPriorityDto[]>(
       api.get<ApiResponse<StudentPriorityDto[]>>("/diagnosis/available-students", {
-        params: { clinicId, termId },
+        params: { clinicId, termId, searchTerm },
       }) as any
     ),
   assign: (cmd: {
     InternDoctorId: string;
-    dto: { diagnosisId: number; studentId: number };
+    dto: { diagnosisRecordId: number; studentId: number };
   }) =>
     call<CaseAssignmentDto>(
       api.post<ApiResponse<CaseAssignmentDto>>("/diagnosis/assign", cmd) as any

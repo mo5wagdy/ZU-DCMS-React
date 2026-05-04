@@ -123,7 +123,7 @@ export function BookFlow({ bookingType }: Props) {
       <Progress value={(step / 4) * 100} className="h-1.5 mb-6" />
       <ErrorMessage message={error} />
 
-      {hasActiveBooking && (
+      {hasActiveBooking && step !== 4 && (
         <Card className="p-6 mb-6 bg-destructive/10 text-destructive border-destructive/20">
           <h2 className="font-bold text-lg mb-2">تنبيه: يوجد حجز نشط</h2>
           <p>لا يمكنك حجز موعد جديد حالياً لأن لديك حجز قيد الانتظار أو أنت قيد العلاج في عيادة أخرى. يرجى إتمام حجزك الحالي أو إالغائه أولاً.</p>

@@ -49,8 +49,8 @@ export interface AuthDto {
 }
 
 export interface RegisterPatientDto {
-  username: string;
   fullName: string;
+  parentName?: string;
   phoneNumber: string;
   identityType: number;
   identityNumber: string;
@@ -176,11 +176,14 @@ export interface DiagnosisRecordDto {
   patientName: string;
   internDoctorName: string;
   clinicName: string;
+  clinicId: number;
   diagnosisTypeName: string;
   complaint: string;
   notes?: string;
   diagnosedAt: string;
   isAssigned: boolean;
+  studentName?: string;
+  studentCode?: string;
 }
 
 export interface DiagnosisTypeDto {
@@ -202,10 +205,16 @@ export interface BookingForDiagnosisDto {
   patientName: string;
   patientAge: number;
   patientGender: number;
+  patientCode: string;
+  phoneNumber: string;
   conditions: number;
   otherConditions?: string;
   preliminaryComplaint?: string;
+  isDiagnosed: boolean;
   isAssigned: boolean;
+  status: number;
+  studentName?: string;
+  studentCode?: string;
 }
 
 export interface StudentPriorityDto {

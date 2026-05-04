@@ -14,6 +14,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import { homeForRole } from "@/utils/roles";
+
 interface HeaderProps {
   showSidebarTrigger?: boolean;
 }
@@ -27,12 +29,14 @@ export function Header({ showSidebarTrigger = false }: HeaderProps) {
     window.location.href = "/";
   };
 
+  const homeUrl = homeForRole(role);
+
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-card/80 backdrop-blur-md">
       <div className="container flex h-16 items-center justify-between gap-4">
         <div className="flex items-center gap-2 min-w-0">
           {showSidebarTrigger && <SidebarTrigger />}
-          <Link to="/" className="flex items-center gap-3 group min-w-0">
+          <Link to={homeUrl} className="flex items-center gap-3 group min-w-0">
             <div className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-hero text-primary-foreground font-bold text-sm shadow-card shrink-0">
               ZU
             </div>

@@ -86,4 +86,13 @@ export const adminApi = {
     call<string>(
       api.put<ApiResponse<string>>("/admin/student-requirements", cmd) as any
     ),
+  setTermRequirements: (cmd: {
+    adminId: string;
+    academicYear: number;
+    termId: number;
+    requirements: { clinicId: number; requiredCount: number }[];
+  }) =>
+    call<string>(
+      api.put<ApiResponse<string>>("/admin/student-requirements/yearly", cmd) as any
+    ),
 };

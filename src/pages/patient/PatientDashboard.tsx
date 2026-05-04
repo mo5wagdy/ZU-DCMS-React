@@ -122,13 +122,15 @@ export default function PatientDashboard() {
               desc={t("landing.bookNewDesc")}
               accent="primary"
             />
-            <QuickAction
-              to="/booking/followup"
-              icon={<RotateCw className="h-5 w-5" />}
-              title={t("landing.followUp")}
-              desc={t("landing.followUpDesc")}
-              accent="gold"
-            />
+            {bookingsQ.data && bookingsQ.data.totalCount > 0 && (
+              <QuickAction
+                to="/booking/followup"
+                icon={<RotateCw className="h-5 w-5" />}
+                title={t("landing.followUp")}
+                desc={t("landing.followUpDesc")}
+                accent="gold"
+              />
+            )}
           </>
         )}
         <QuickAction
@@ -176,7 +178,8 @@ export default function PatientDashboard() {
             const status = overrides[b.id] ?? b.status;
             const canCancel =
               status === BookingStatus.Pending ||
-              status === BookingStatus.Confirmed;
+              status === BookingStatus.Confirmed ||
+              status === BookingStatus.Delayed;
             return (
               <Card key={b.id} className="p-5 card-hover">
                 <div className="flex flex-wrap items-center justify-between gap-3">

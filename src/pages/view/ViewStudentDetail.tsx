@@ -94,9 +94,11 @@ export default function ViewStudentDetail() {
               <GraduationCap className="h-6 w-6" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold">{student.fullName}</h1>
-              <p className="text-sm text-muted-foreground">
-                {student.studentCode} • {t("student.academicYear")} {student.academicYear}
+              <h1 className="text-2xl font-bold leading-tight">{student.fullName}</h1>
+              <p className="text-sm text-muted-foreground mt-1.5 flex items-center gap-2">
+                <span className="font-mono bg-muted px-1.5 py-0.5 rounded text-[11px]">{student.studentCode}</span>
+                <span className="opacity-40">•</span>
+                <span>{t("student.academicYear")} {student.academicYear}</span>
               </p>
             </div>
           </div>
@@ -110,7 +112,7 @@ export default function ViewStudentDetail() {
                     {progress.isTermComplete && (
                       <Badge className="bg-success/10 text-success border-success/30">
                         <Trophy className="h-3 w-3 me-1" />
-                        {t("status.complete")}
+                        {t("status.completed")}
                       </Badge>
                     )}
                   </CardTitle>

@@ -46,8 +46,23 @@ export const CaseStatus = {
   Rejected: 6,
 } as const;
 
-export function hasFlag(value: number, flag: number): boolean {
-  return (value & flag) !== 0;
+export function hasFlag(value: number | string | undefined | null, flag: number | string): boolean {
+  if (value === undefined || value === null) return false;
+  
+  if (typeof value === "string") {
+    // If it's a string like "Diabetes, Hypertension", check if the flag name exists in the string
+    // This happens when EF Core or Serializer converts flags to strings
+    const flagKey = ChronicConditionList.find(c => c.value === flag || c.key === flag)?.key;
+    if (!flagKey) return false;
+    
+    // Case-insensitive check for the key in the comma-separated string
+    const normalizedValue = value.toLowerCase();
+    const normalizedKey = flagKey.toLowerCase();
+    
+    return normalizedValue.split(',').map(s => s.trim()).includes(normalizedKey);
+  }
+
+  return (Number(value) & Number(flag)) !== 0;
 }
 
 export function flagsToArray(value: number, allFlags: number[]): number[] {

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import i18next from "i18next";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
@@ -33,7 +34,7 @@ import { toEnglishDigits } from "@/utils/format";
 const schema = z
   .object({
     fullName: z.string().trim().min(3, { message: "الاسم قصير" }).max(100),
-    username: z.string().trim().min(3).max(50).regex(/^[\u0600-\u06FFa-zA-Z0-9._-]+$/, { message: "اسم المستخدم غير صالح" }),
+    parentName: z.string().trim().max(100).optional().or(z.literal("")),
     phoneNumber: z
       .string()
       .trim()
@@ -53,6 +54,23 @@ const schema = z
     chronicConditions: z.array(z.number()).default([]),
     otherConditions: z.string().max(500).optional().or(z.literal("")),
   }).superRefine((data, ctx) => {
+    // Child logic (5-17 years)
+    const dob = new Date(data.dateOfBirth);
+    const today = new Date();
+    let age = today.getFullYear() - dob.getFullYear();
+    const m = today.getMonth() - dob.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+      age--;
+    }
+    
+    if (age >= 5 && age <= 17 && (!data.parentName || data.parentName.trim().length < 3)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: i18next.t("auth.parentNameRequired"),
+        path: ["parentName"],
+      });
+    }
+
     if (data.identityType === IdentityType.NationalId) {
       if (data.identityNumber.length !== 14 || !/^\d+$/.test(data.identityNumber)) {
         ctx.addIssue({
@@ -108,7 +126,7 @@ export default function Register() {
     }
     const fields: (keyof FormVals)[][] = [
       [],
-      ["fullName", "username", "phoneNumber", "identityType", "identityNumber", "dateOfBirth", "gender"],
+      ["fullName", "parentName", "phoneNumber", "identityType", "identityNumber", "dateOfBirth", "gender"],
       ["address", "email"],
       ["chronicConditions", "otherConditions"],
     ];
@@ -126,7 +144,7 @@ export default function Register() {
       const data = await authApi.register({
         dto: {
           fullName: vals.fullName,
-          username: vals.username,
+          parentName: vals.parentName || undefined,
           phoneNumber: toEnglishDigits(vals.phoneNumber),
           identityType: vals.identityType,
           identityNumber: toEnglishDigits(vals.identityNumber),
@@ -175,11 +193,29 @@ export default function Register() {
               <Input className="mt-1" {...register("fullName")} />
               {errors.fullName && <p className="text-xs text-destructive mt-1">{errors.fullName.message}</p>}
             </div>
-            <div>
-              <Label>{t("auth.username")}</Label>
-              <Input className="mt-1" dir="ltr" {...register("username")} />
-              {errors.username && <p className="text-xs text-destructive mt-1">{errors.username.message}</p>}
-            </div>
+
+            {(() => {
+              const dob = watch("dateOfBirth");
+              if (!dob) return null;
+              const birthDate = new Date(dob);
+              const today = new Date();
+              let age = today.getFullYear() - birthDate.getFullYear();
+              const m = today.getMonth() - birthDate.getMonth();
+              if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+              }
+              if (age >= 5 && age <= 17) {
+                return (
+                  <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                    <Label>{t("auth.parentName")}</Label>
+                    <Input className="mt-1 border-accent/40" {...register("parentName")} placeholder={t("auth.parentNamePlaceholder")} />
+                    {errors.parentName && <p className="text-xs text-destructive mt-1">{errors.parentName.message}</p>}
+                  </div>
+                );
+              }
+              return null;
+            })()}
+
             <div>
               <Label>{t("auth.phone")}</Label>
               <Input className="mt-1" dir="ltr" type="tel" placeholder="01XXXXXXXXX" {...register("phoneNumber")} />
@@ -220,9 +256,24 @@ export default function Register() {
                     {showId ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
-                {watch("identityType") === IdentityType.NationalId && (
-                  <p className="text-[10px] text-accent mt-1">يجب إدخال 14 رقم صحيح (للمصريين فقط)</p>
-                )}
+                {(() => {
+                  const dob = watch("dateOfBirth");
+                  const birthDate = new Date(dob);
+                  const today = new Date();
+                  let age = today.getFullYear() - birthDate.getFullYear();
+                  const m = today.getMonth() - birthDate.getMonth();
+                  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                    age--;
+                  }
+                  
+                  if (watch("identityType") === IdentityType.NationalId) {
+                    if (age >= 5 && age <= 17) {
+                      return <p className="text-[10px] text-accent mt-1 font-semibold">{t("auth.childIdentityHint")}</p>;
+                    }
+                    return <p className="text-[10px] text-accent mt-1">{t("identityType.1")} - 14 رقم</p>;
+                  }
+                  return null;
+                })()}
               </div>
             </div>
             {errors.identityNumber && <p className="text-xs text-destructive">{errors.identityNumber.message}</p>}

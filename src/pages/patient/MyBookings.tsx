@@ -49,6 +49,7 @@ export default function MyBookings() {
   const [filter, setFilter] = useState<FilterKey>("all");
   const [page, setPage] = useState(1);
   const [cancelTarget, setCancelTarget] = useState<BookingDto | null>(null);
+  const [overrides, setOverrides] = useState<Record<number, number>>({});
 
   // Resolve patient → fetch their paged bookings.
   const patientQ = useFetch(
@@ -145,6 +146,7 @@ export default function MyBookings() {
             <BookingRow
               key={b.id}
               booking={b}
+              statusOverride={overrides[b.id]}
               lang={lang}
               onCancel={() => setCancelTarget(b)}
             />
@@ -164,7 +166,8 @@ export default function MyBookings() {
         target={cancelTarget}
         patientId={patientQ.data?.id || 0}
         onClose={() => setCancelTarget(null)}
-        onCancelled={() => {
+        onCancelled={(id) => {
+          setOverrides(prev => ({ ...prev, [id]: BookingStatus.Cancelled }));
           setCancelTarget(null);
           bookingsQ.refetch();
           useUIStore.getState().triggerRefresh();
@@ -177,17 +180,21 @@ export default function MyBookings() {
 /** Single booking card row with cancel CTA when allowed. */
 function BookingRow({
   booking,
+  statusOverride,
   lang,
   onCancel,
 }: {
   booking: BookingDto;
+  statusOverride?: number;
   lang: "ar" | "en";
   onCancel: () => void;
 }) {
   const { t } = useTranslation();
+  const status = statusOverride ?? booking.status;
   const canCancel =
-    (booking.status === BookingStatus.Pending ||
-      booking.status === BookingStatus.Confirmed);
+    (status === BookingStatus.Pending ||
+      status === BookingStatus.Confirmed ||
+      status === BookingStatus.Delayed);
 
   return (
     <Card>
@@ -213,7 +220,7 @@ function BookingRow({
                   ? t("booking.new")
                   : t("booking.followUp")}
               </Badge>
-              <StatusBadge type="booking" value={booking.status} />
+              <StatusBadge type="booking" value={status} />
             </div>
             <div className="text-sm text-muted-foreground">
               {formatDate(booking.sessionDate, lang)} ·{" "}
@@ -254,18 +261,19 @@ function CancelBookingDialog({
   target: BookingDto | null;
   patientId: number;
   onClose: () => void;
-  onCancelled: () => void;
+  onCancelled: (id: number) => void;
 }) {
   const { t } = useTranslation();
   const [busy, setBusy] = useState(false);
+  const targetId = target?.id; // Capture ID locally
 
   const submit = async () => {
-    if (!target) return;
+    if (!targetId) return;
     setBusy(true);
     try {
-      await bookingApi.cancel({ bookingId: target.id, patientId });
+      await bookingApi.cancel({ bookingId: targetId, patientId });
       toast.success(t("booking.cancelled"));
-      onCancelled();
+      onCancelled(targetId);
     } catch (e) {
       toast.error((e as Error).message);
     } finally {

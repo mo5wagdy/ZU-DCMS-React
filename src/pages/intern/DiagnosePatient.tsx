@@ -12,6 +12,7 @@ import {
   UserPlus,
   Award,
   AlertCircle,
+  Search,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -71,6 +72,27 @@ export default function DiagnosePatient() {
   useEffect(() => {
     lookupApi.getClinics().then(setClinics).catch(e => toast({ title: e.message, variant: "destructive" }));
   }, [toast]);
+
+  // Check if diagnosis already exists
+  useEffect(() => {
+    if (!bookingId) return;
+    diagnosisApi.getByBooking(Number(bookingId))
+      .then(data => {
+        if (data) {
+          setDiagnosis(data);
+          // Pre-fill form just in case (though we show assignment panel)
+          form.reset({
+            clinicId: data.clinicId,
+            diagnosisTypeId: 0, // We don't have the ID in the DTO yet, but assignment panel only needs clinicId
+            complaint: data.complaint,
+            notes: data.notes || ""
+          });
+        }
+      })
+      .catch(() => {
+        // Not found is fine, means we need to create it
+      });
+  }, [bookingId, form]);
 
   // Load diagnosis types when clinic changes
   useEffect(() => {
@@ -292,15 +314,23 @@ function AssignStudentPanel({
   const [loading, setLoading] = useState(true);
   const [assigning, setAssigning] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  // Simple debounce
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search), 500);
+    return () => clearTimeout(timer);
+  }, [search]);
 
   useEffect(() => {
     setLoading(true);
     diagnosisApi
-      .availableStudents()
+      .availableStudents(diagnosis.clinicId, undefined, debouncedSearch || undefined)
       .then((data) => setStudents(data ?? []))
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
-  }, [refreshTick]);
+  }, [refreshTick, debouncedSearch]);
 
   const handleAssign = async (studentId: number) => {
     setAssigning(studentId);
@@ -308,7 +338,7 @@ function AssignStudentPanel({
     try {
       await diagnosisApi.assign({
         InternDoctorId: userId || "",
-        dto: { diagnosisId: diagnosis.id, studentId }
+        dto: { diagnosisRecordId: diagnosis.id, studentId }
       });
       toast({ title: t("intern.assignSuccess") });
       useUIStore.getState().triggerRefresh();
@@ -325,50 +355,78 @@ function AssignStudentPanel({
   return (
     <div className="space-y-4">
       <Card className="border-success/30 bg-success/5">
-        <CardContent className="p-4 flex items-center gap-3">
-          <CheckCircle2 className="h-5 w-5 text-success flex-shrink-0" />
-          <div className="text-sm">
-            <div className="font-medium text-foreground">{t("intern.diagnosisSaved")}</div>
-            <div className="text-muted-foreground">
-              {diagnosis.clinicName} — {diagnosis.diagnosisTypeName}
+        <CardContent className="p-4 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <CheckCircle2 className="h-5 w-5 text-success flex-shrink-0" />
+            <div className="text-sm">
+              <div className="font-medium text-foreground">
+                {diagnosis.isAssigned ? t("intern.assigned") : t("intern.diagnosisSaved")}
+              </div>
+              <div className="text-muted-foreground">
+                {diagnosis.clinicName} — {diagnosis.diagnosisTypeName}
+              </div>
             </div>
           </div>
+          {diagnosis.isAssigned && (
+            <div className="text-end">
+              <div className="text-xs text-muted-foreground">{t("intern.assignedTo")}</div>
+              <div className="text-sm font-bold text-success">{diagnosis.studentName}</div>
+              <div className="text-[10px] font-mono opacity-60">{diagnosis.studentCode}</div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <UserPlus className="h-5 w-5 text-accent" />
-            {t("intern.availableStudents")}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ErrorMessage message={error} />
-          {loading && <LoadingSpinner fullPage />}
-          {!loading && students && students.length === 0 && (
-            <div className="text-center py-8">
-              <AlertCircle className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
-              <p className="text-muted-foreground text-sm">{t("intern.noStudentsAvailable")}</p>
-              <Button variant="outline" size="sm" className="mt-4" onClick={onDone}>
-                {t("intern.skipAssign")}
-              </Button>
+      {!diagnosis.isAssigned ? (
+        <Card>
+          <CardHeader className="pb-3 flex flex-row items-center justify-between">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <UserPlus className="h-5 w-5 text-accent" />
+              {t("intern.availableStudents")}
+            </CardTitle>
+            <div className="relative w-full max-w-[240px]">
+              <Search className="absolute start-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder={t("common.search")}
+                className="ps-9 h-9"
+              />
             </div>
-          )}
-          {!loading && students && students.length > 0 && (
-            <div className="space-y-3">
-              {students.map((s) => (
-                <StudentCard
-                  key={s.studentId}
-                  student={s}
-                  onAssign={handleAssign}
-                  loading={assigning === s.studentId}
-                />
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+          </CardHeader>
+          <CardContent>
+            <ErrorMessage message={error} />
+            {loading && <LoadingSpinner fullPage />}
+            {!loading && students && students.length === 0 && (
+              <div className="text-center py-8">
+                <AlertCircle className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+                <p className="text-muted-foreground text-sm">{t("intern.noStudentsAvailable")}</p>
+                <Button variant="outline" size="sm" className="mt-4" onClick={onDone}>
+                  {t("intern.skipAssign")}
+                </Button>
+              </div>
+            )}
+            {!loading && students && students.length > 0 && (
+              <div className="space-y-3">
+                {students.map((s) => (
+                  <StudentCard
+                    key={s.studentId}
+                    student={s}
+                    onAssign={handleAssign}
+                    loading={assigning === s.studentId}
+                  />
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="flex justify-center pt-4">
+          <Button onClick={onDone} className="min-w-[200px]">
+            {t("common.back")}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

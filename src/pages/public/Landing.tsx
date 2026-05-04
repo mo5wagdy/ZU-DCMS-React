@@ -113,13 +113,6 @@ export default function Landing() {
           <Button asChild variant="ghost">
             <Link to="/auth/register">{t("landing.register")}</Link>
           </Button>
-          <span className="text-muted-foreground/50">·</span>
-          <Link
-            to="/auth/staff-login"
-            className="text-xs text-muted-foreground hover:text-primary transition-colors"
-          >
-            {t("landing.staffLogin")}
-          </Link>
         </div>
       </section>
     </div>

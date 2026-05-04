@@ -25,11 +25,17 @@ export default function InternDashboard() {
     []
   );
 
+  const { data: recentSessions, loading: loadingRecent } = useFetch<SessionDto[]>(
+    () => sessionApi.getRecent(7),
+    []
+  );
+
   const today = new Date();
+  const otherSessions = recentSessions?.filter(s => new Date(s.date).toDateString() !== today.toDateString()) || [];
 
   return (
-    <div className="container py-8 max-w-6xl">
-      <div className="mb-8 flex items-center gap-3">
+    <div className="container py-8 max-w-6xl space-y-8">
+      <div className="flex items-center gap-3">
         <div className="grid h-12 w-12 place-items-center rounded-xl gradient-hero text-primary-foreground shadow-card">
           <Stethoscope className="h-6 w-6" />
         </div>
@@ -64,12 +70,30 @@ export default function InternDashboard() {
           )}
         </CardContent>
       </Card>
+
+      {otherSessions.length > 0 && (
+        <Card className="card-hover border-dashed">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Calendar className="h-5 w-5 text-primary" />
+              {t("intern.recentSessions")}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 md:grid-cols-2 opacity-80 hover:opacity-100 transition-opacity">
+              {otherSessions.map((s) => (
+                <SessionCard key={s.id} session={s} showDate />
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
 
 // Single session capacity tile + CTA
-function SessionCard({ session }: { session: SessionDto }) {
+function SessionCard({ session, showDate = false }: { session: SessionDto; showDate?: boolean }) {
   const { t } = useTranslation();
   const lang = useUIStore((s) => s.language);
   const newPct =
@@ -85,9 +109,16 @@ function SessionCard({ session }: { session: SessionDto }) {
     <Card className="border-border/60 hover:border-primary/30 transition-colors">
       <CardContent className="p-5 space-y-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 font-semibold text-primary">
-            <Clock className="h-4 w-4" />
-            {formatTime12h(session.startTime, lang)} - {formatTime12h(session.endTime, lang)}
+          <div className="flex flex-col">
+            {showDate && (
+              <div className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-1">
+                {formatDate(new Date(session.date), lang)}
+              </div>
+            )}
+            <div className="flex items-center gap-2 font-semibold text-primary">
+              <Clock className="h-4 w-4" />
+              {formatTime12h(session.startTime, lang)} - {formatTime12h(session.endTime, lang)}
+            </div>
           </div>
           {session.isFull && (
             <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/30">

@@ -5,7 +5,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { Loader2, Plus, Users as UsersIcon, Search } from "lucide-react";
+import { Loader2, Plus, Users as UsersIcon, Search, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,6 +37,11 @@ import { formatDate } from "@/utils/format";
 import { toEnglishDigits } from "@/utils/format";
 import type { PagedResult, StaffUsersDto } from "@/types";
 
+function SortIcon({ field, current, desc }: { field: string; current: string; desc: boolean }) {
+  if (current !== field) return <ArrowUpDown className="h-3 w-3 opacity-40" />;
+  return desc ? <ArrowDown className="h-3 w-3 text-primary" /> : <ArrowUp className="h-3 w-3 text-primary" />;
+}
+
 const userSchema = z.object({
   fullName: z.string().trim().min(3, "min 3"),
   username: z.string().trim().min(3, "min 3").regex(/^[\u0600-\u06FFa-zA-Z0-9._-]+$/, "invalid"),
@@ -62,6 +67,8 @@ export default function AdminUsers() {
   const [error, setError] = useState<string | null>(null);
   const [openCreate, setOpenCreate] = useState(false);
   const [reload, setReload] = useState(0);
+  const [sortBy, setSortBy] = useState("createdAt");
+  const [sortDescending, setSortDescending] = useState(true);
   const { refreshTick } = useUIStore();
 
   useEffect(() => {
@@ -73,8 +80,8 @@ export default function AdminUsers() {
           page,
           pageSize: PAGE_SIZE,
           searchTerm: search || undefined,
-          sortDescending: true,
-          sortBy: "createdAt",
+          sortDescending,
+          sortBy,
         },
         role || undefined
       )
@@ -84,7 +91,17 @@ export default function AdminUsers() {
     return () => {
       mounted = false;
     };
-  }, [page, search, role, reload, refreshTick]);
+  }, [page, search, role, reload, refreshTick, sortBy, sortDescending]);
+
+  const toggleSort = (field: string) => {
+    if (sortBy === field) {
+      setSortDescending(!sortDescending);
+    } else {
+      setSortBy(field);
+      setSortDescending(true);
+    }
+    setPage(1);
+  };
 
   const onSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -167,77 +184,125 @@ export default function AdminUsers() {
 
       <Card>
         <CardContent className="pt-6">
-          {loading && <LoadingSpinner />}
-          <ErrorMessage message={error} />
-          {!loading && data && data.items.length === 0 && (
-            <div className="py-12 text-center text-muted-foreground">{t("admin.noUsers")}</div>
-          )}
-          {!loading && data && data.items.length > 0 && (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="text-xs text-muted-foreground border-b border-border">
-                  <tr>
-                    <th className="text-start py-2 px-2">{t("common.name")}</th>
-                    <th className="text-start py-2 px-2 hidden md:table-cell">
-                      {t("auth.username")}
-                    </th>
-                    <th className="text-start py-2 px-2 hidden md:table-cell">
-                      {t("auth.email")}
-                    </th>
-                    <th className="text-start py-2 px-2">{t("common.role")}</th>
-                    <th className="text-start py-2 px-2 hidden sm:table-cell">
-                      {t("admin.isActive")}
-                    </th>
-                    <th className="text-start py-2 px-2 hidden lg:table-cell">
-                      {t("admin.createdAt")}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.items.map((u) => (
-                    <tr
-                      key={u.id}
-                      className="border-b border-border/60 last:border-0 hover:bg-muted/40 cursor-pointer transition-colors"
-                      onClick={() => navigate(`/admin/users/${u.id}`)}
-                    >
-                      <td className="py-2.5 px-2 font-medium">{u.fullName}</td>
-                      <td className="py-2.5 px-2 hidden md:table-cell text-muted-foreground">
-                        {u.username}
-                      </td>
-                      <td className="py-2.5 px-2 hidden md:table-cell text-muted-foreground">
-                        {u.email ?? "—"}
-                      </td>
-                      <td className="py-2.5 px-2">
-                        <Badge variant="outline">{t(`roles.${u.role}`)}</Badge>
-                      </td>
-                      <td className="py-2.5 px-2 hidden sm:table-cell">
-                        {u.isActive ? (
-                          <Badge className="bg-success/10 text-success border-success/30">
-                            {t("status.active")}
-                          </Badge>
-                        ) : (
-                          <Badge variant="outline">{t("status.inactive")}</Badge>
-                        )}
-                      </td>
-                      <td className="py-2.5 px-2 hidden lg:table-cell text-muted-foreground">
-                        {u.createdAt ? formatDate(u.createdAt) : "—"}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+          <div className="relative min-h-[400px]">
+            {loading && (
+              <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/50 backdrop-blur-[1px] rounded-lg">
+                <LoadingSpinner />
+              </div>
+            )}
+            
+            <ErrorMessage message={error} />
+            
+            {!loading && data && data.items.length === 0 && (
+              <div className="py-24 text-center space-y-4 animate-in fade-in duration-500">
+                <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-muted/50 border-2 border-dashed border-muted">
+                  <Search className="h-8 w-8 text-muted-foreground/60" />
+                </div>
+                <div className="space-y-2 max-w-xs mx-auto">
+                  <h3 className="font-bold text-lg">{t("admin.noUsers")}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {search || role 
+                      ? t("common.noResultsFilter") || "لم نجد مستخدمين يطابقون بحثك الحالي. جرب تغيير الفلتر أو كلمة البحث." 
+                      : t("admin.noUsersDescription") || "لا يوجد مستخدمين مسجلين في النظام حالياً."}
+                  </p>
+                </div>
+              </div>
+            )}
 
-          {data && data.totalPages > 1 && (
-            <div className="mt-4">
-              <Pagination
-                page={page}
-                totalPages={data.totalPages}
-                onPageChange={setPage}
-              />
-            </div>
-          )}
+            {data && data.items.length > 0 && (
+              <div className="animate-in fade-in duration-500">
+                <div className="overflow-x-auto rounded-lg border border-border/50">
+                  <table className="w-full text-sm">
+                    <thead className="bg-muted/30 text-xs text-muted-foreground border-b border-border">
+                      <tr>
+                        <th 
+                          className="text-start py-4 px-4 cursor-pointer hover:text-primary transition-colors"
+                          onClick={() => toggleSort("fullname")}
+                        >
+                          <div className="flex items-center gap-1.5">
+                            {t("common.name")}
+                            <SortIcon field="fullname" current={sortBy} desc={sortDescending} />
+                          </div>
+                        </th>
+                        <th className="text-start py-4 px-3 hidden md:table-cell cursor-pointer hover:text-primary transition-colors" onClick={() => toggleSort("username")}>
+                          <div className="flex items-center gap-1.5">
+                            {t("auth.username")}
+                            <SortIcon field="username" current={sortBy} desc={sortDescending} />
+                          </div>
+                        </th>
+                        <th className="text-start py-4 px-3 hidden md:table-cell cursor-pointer hover:text-primary transition-colors" onClick={() => toggleSort("email")}>
+                          <div className="flex items-center gap-1.5">
+                            {t("auth.email")}
+                            <SortIcon field="email" current={sortBy} desc={sortDescending} />
+                          </div>
+                        </th>
+                        <th className="text-start py-4 px-3 cursor-pointer hover:text-primary transition-colors" onClick={() => toggleSort("role")}>
+                          <div className="flex items-center gap-1.5">
+                            {t("common.role")}
+                            <SortIcon field="role" current={sortBy} desc={sortDescending} />
+                          </div>
+                        </th>
+                        <th className="text-start py-4 px-3 hidden sm:table-cell">
+                          {t("admin.isActive")}
+                        </th>
+                        <th 
+                          className="text-start py-4 px-4 hidden lg:table-cell cursor-pointer hover:text-primary transition-colors"
+                          onClick={() => toggleSort("createdAt")}
+                        >
+                          <div className="flex items-center gap-1.5">
+                            {t("admin.createdAt")}
+                            <SortIcon field="createdAt" current={sortBy} desc={sortDescending} />
+                          </div>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border/40">
+                      {data.items.map((u) => (
+                        <tr
+                          key={u.id}
+                          className="hover:bg-muted/40 cursor-pointer transition-colors group"
+                          onClick={() => navigate(`/admin/users/${u.id}`)}
+                        >
+                          <td className="py-3.5 px-4 font-medium group-hover:text-primary transition-colors">{u.fullName}</td>
+                          <td className="py-3.5 px-3 hidden md:table-cell text-muted-foreground font-mono text-xs">
+                            {u.username}
+                          </td>
+                          <td className="py-3.5 px-3 hidden md:table-cell text-muted-foreground">
+                            {u.email ?? "—"}
+                          </td>
+                          <td className="py-3.5 px-3">
+                            <Badge variant="secondary" className="font-normal">{t(`roles.${u.role}`)}</Badge>
+                          </td>
+                          <td className="py-3.5 px-3 hidden sm:table-cell">
+                            {u.isActive ? (
+                              <Badge className="bg-success/10 text-success border-success/30 hover:bg-success/20">
+                                {t("status.active")}
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline" className="opacity-60">{t("status.inactive")}</Badge>
+                            )}
+                          </td>
+                          <td className="py-3.5 px-4 hidden lg:table-cell text-muted-foreground text-xs">
+                            {u.createdAt ? formatDate(u.createdAt) : "—"}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {data.totalPages > 1 && (
+                  <div className="mt-6 flex justify-center sm:justify-end">
+                    <Pagination
+                      page={page}
+                      totalPages={data.totalPages}
+                      onPageChange={setPage}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </CardContent>
       </Card>
     </div>
