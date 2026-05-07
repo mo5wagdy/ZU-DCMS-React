@@ -30,11 +30,10 @@ import { useState } from "react";
 export default function PatientDashboard() {
   const { t } = useTranslation();
   const { userId } = useAuth();
-  const lang = useUIStore((s) => s.language);
-
+  const { language: lang, refreshTick } = useUIStore();
   const patientQ = useFetch(
     () => (userId ? patientApi.byUserId(userId) : Promise.resolve(null as never)),
-    [userId]
+    [userId, refreshTick]
   );
 
   const bookingsQ = useFetch(
@@ -113,22 +112,23 @@ export default function PatientDashboard() {
       )}
 
       <div className="grid sm:grid-cols-3 gap-4 mb-10">
-        {patientQ.data && !patientQ.data.hasActiveBooking && !patientQ.data.hasActiveCase && (
+        {!patientQ.data?.hasActiveBooking && (
           <>
-            <QuickAction
-              to="/booking/new"
-              icon={<CalendarPlus className="h-5 w-5" />}
-              title={t("landing.bookNew")}
-              desc={t("landing.bookNewDesc")}
-              accent="primary"
-            />
-            {bookingsQ.data && bookingsQ.data.totalCount > 0 && (
+            {patientQ.data?.hasActiveCase ? (
               <QuickAction
                 to="/booking/followup"
                 icon={<RotateCw className="h-5 w-5" />}
                 title={t("landing.followUp")}
                 desc={t("landing.followUpDesc")}
                 accent="gold"
+              />
+            ) : (
+              <QuickAction
+                to="/booking/new"
+                icon={<CalendarPlus className="h-5 w-5" />}
+                title={t("landing.bookNew")}
+                desc={t("landing.bookNewDesc")}
+                accent="primary"
               />
             )}
           </>
@@ -160,11 +160,11 @@ export default function PatientDashboard() {
           title={t("booking.noBookings")}
           description={t("booking.noBookingsDesc")}
           action={
-            !patientQ.data?.hasActiveBooking && !patientQ.data?.hasActiveCase && (
+            !patientQ.data?.hasActiveBooking && (
               <Button asChild size="sm">
-                <Link to="/booking/new">
+                <Link to={patientQ.data?.hasActiveCase ? "/booking/followup" : "/booking/new"}>
                   <CalendarPlus className="h-4 w-4 me-1" />
-                  {t("booking.newAppointment")}
+                  {patientQ.data?.hasActiveCase ? t("booking.followUp") : t("booking.newAppointment")}
                 </Link>
               </Button>
             )

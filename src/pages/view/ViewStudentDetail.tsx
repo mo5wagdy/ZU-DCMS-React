@@ -23,7 +23,7 @@ import type { StudentDto, StudentProgressDto } from "@/types";
  */
 export default function ViewStudentDetail() {
   const { t } = useTranslation();
-  const { refreshTick } = useUIStore();
+  const { refreshTick, language: lang } = useUIStore();
   const { id } = useParams<{ id: string }>();
   const studentId = Number(id);
 
@@ -148,7 +148,9 @@ export default function ViewStudentDetail() {
                       <div key={r.id} className="rounded-lg border border-border p-3 space-y-2">
                         <div className="flex items-center justify-between gap-2 flex-wrap">
                           <div className="flex items-center gap-2">
-                            <span className="font-medium">{r.clinicName}</span>
+                            <span className="font-medium">
+                              {lang === 'en' ? (r.clinicNameEn || r.clinicName) : r.clinicName}
+                            </span>
                             {r.isSatisfied && (
                               <CheckCircle2 className="h-4 w-4 text-success" />
                             )}

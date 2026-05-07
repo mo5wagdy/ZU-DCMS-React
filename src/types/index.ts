@@ -176,8 +176,10 @@ export interface DiagnosisRecordDto {
   patientName: string;
   internDoctorName: string;
   clinicName: string;
+  clinicNameEn?: string;       // English clinic name
   clinicId: number;
   diagnosisTypeName: string;
+  diagnosisTypeNameEn?: string; // English diagnosis type name
   complaint: string;
   notes?: string;
   diagnosedAt: string;
@@ -237,19 +239,25 @@ export interface CaseAssignmentDto {
   id: number;
   patientName: string;
   clinicId: number;
-  clinicName: string;
+  clinicName: string;      // Arabic
+  clinicNameEn: string;    // English
+  diagnosis: string;       // Arabic
+  diagnosisEn: string;     // English
+  studentId: number;
   studentName: string;
+  studentCode: string;
   assignedByInternName: string;
-  diagnosis: string;
   notes?: string;
   status: number;
   assignedAt: string;
+  assignmentReviewedAt?: string;
   sessions: CaseSessionDto[];
 }
 
 export interface CaseSessionDto {
   id: number;
-  proceduresNames: string[];
+  proceduresNames: string[];     // Arabic
+  proceduresNamesEn: string[];   // English
   isCompleted: boolean;
   hasFollowUp: boolean;
   notes?: string;
@@ -276,6 +284,12 @@ export interface ReviewCaseDto {
   notes?: string;
 }
 
+export interface ReviewAssignmentDto {
+  caseAssignmentId: number;
+  action: string;
+  notes?: string;
+}
+
 // ============= Student =============
 export interface StudentDto {
   id: number;
@@ -289,7 +303,9 @@ export interface StudentDto {
 export interface StudentRequirementDto {
   id: number;
   clinicName: string;
+  clinicNameEn: string;
   requirementTypeName: string;
+  requirementTypeNameEn: string;
   requiredCount: number;
   completedCount: number;
   transferredCount: number;

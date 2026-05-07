@@ -142,7 +142,7 @@ export default function AdminRequirements() {
           termId: term.id,
           requirements: requirements.filter(r => r.requiredCount > 0),
         });
-        toast.success(t("admin.termRequirementsUpdated") || "تم تحديث متطلبات الترم بنجاح");
+        toast.success(t("admin.termRequirementsUpdated", "تم تحديث متطلبات الترم بنجاح"));
       }
       useUIStore.getState().triggerRefresh();
     } catch (e) {
@@ -182,7 +182,7 @@ export default function AdminRequirements() {
               mode === "individual" ? "bg-background shadow-sm text-primary" : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            {t("admin.individualMode") || "طلاب"}
+            {t("admin.individualMode", "طلاب")}
           </button>
           <button
             onClick={() => setMode("yearly")}
@@ -190,7 +190,7 @@ export default function AdminRequirements() {
               mode === "yearly" ? "bg-background shadow-sm text-primary" : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            {t("admin.termMode") || "متطلبات الترم"}
+            {t("admin.termMode", "متطلبات الترم")}
           </button>
         </div>
       </div>
@@ -202,7 +202,7 @@ export default function AdminRequirements() {
         <Card className="h-fit">
           <CardHeader className="pb-3">
             <CardTitle className="text-base">
-              {mode === "individual" ? t("admin.selectStudent") : t("admin.selectAcademicYear") || "اختر السنة الدراسية"}
+              {mode === "individual" ? t("admin.selectStudent") : t("admin.selectAcademicYear", "اختر السنة الدراسية")}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -275,10 +275,10 @@ export default function AdminRequirements() {
             <CardTitle className="text-base flex items-center gap-2">
               {mode === "individual" 
                 ? (selectedStudent ? selectedStudent.fullName : t("admin.selectStudentFirst"))
-                : (selectedYear ? `${t("student.academicYear")} ${selectedYear}` : t("admin.selectYearFirst") || "اختر السنة الدراسية")}
+                : (selectedYear ? `${t("student.academicYear")} ${selectedYear}` : t("admin.selectYearFirst", "اختر السنة الدراسية"))}
               {mode === "yearly" && selectedYear && (
                 <Badge variant="outline" className="font-normal text-[10px]">
-                  {t("admin.bulkApply") || "تحديث جماعي"}
+                  {t("admin.bulkApply", "تحديث جماعي")}
                 </Badge>
               )}
             </CardTitle>
@@ -296,7 +296,7 @@ export default function AdminRequirements() {
                   <ListChecks className="h-6 w-6 opacity-40" />
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  {mode === "individual" ? t("admin.selectStudentFirst") : t("admin.selectYearFirst") || "يرجى اختيار السنة الدراسية للبدء"}
+                  {mode === "individual" ? t("admin.selectStudentFirst") : t("admin.selectYearFirst", "يرجى اختيار السنة الدراسية للبدء")}
                 </p>
               </div>
             ) : (
@@ -307,7 +307,7 @@ export default function AdminRequirements() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {filteredClinics.length === 0 ? (
                       <div className="col-span-full py-12 text-center text-muted-foreground text-sm">
-                        {t("admin.noClinicsForYear") || "لا توجد عيادات متاحة لهذه السنة"}
+                        {t("admin.noClinicsForYear", "لا توجد عيادات متاحة لهذه السنة")}
                       </div>
                     ) : (
                       filteredClinics.map((c) => (
@@ -316,7 +316,7 @@ export default function AdminRequirements() {
                           className="group rounded-xl border border-border p-4 flex items-center justify-between gap-4 hover:border-primary/30 transition-all hover:shadow-sm"
                         >
                           <div className="min-w-0">
-                            <Label htmlFor={`c-${c.id}`} className="font-semibold block truncate cursor-pointer">
+                            <Label htmlFor={`c-${c.id}`} className="font-semibold block truncate cursor-pointer leading-relaxed pb-0.5">
                               {c.name}
                             </Label>
                             <span className="text-[10px] text-muted-foreground">{c.code}</span>

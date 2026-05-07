@@ -23,7 +23,7 @@ import type { CaseAssignmentDto, StudentProgressDto } from "@/types";
 
 export default function StudentDashboard() {
   const { t } = useTranslation();
-  const { refreshTick } = useUIStore();
+  const { refreshTick, language: lang } = useUIStore();
   const { student, term, loading, error } = useStudentContext();
   const [cases, setCases] = useState<CaseAssignmentDto[] | null>(null);
   const [todayQueue, setTodayQueue] = useState<CaseAssignmentDto[] | null>(null);
@@ -201,7 +201,7 @@ export default function StudentDashboard() {
                     </div>
                     <div>
                       <div className="font-bold group-hover:text-primary transition-colors">{c.patientName}</div>
-                      <div className="text-xs text-muted-foreground">{c.clinicName} • {c.diagnosis}</div>
+                      <div className="text-xs text-muted-foreground">{lang === 'en' ? (c.clinicNameEn || c.clinicName) : c.clinicName} • {lang === 'en' ? (c.diagnosisEn || c.diagnosis) : c.diagnosis}</div>
                     </div>
                   </div>
                   <Button size="sm" className="rounded-full">
@@ -241,7 +241,7 @@ export default function StudentDashboard() {
           ) : (
             <div className="space-y-2">
               {activeCases.slice(0, 5).map((c) => (
-                <CaseRowCompact key={c.id} item={c} />
+                <CaseRowCompact key={c.id} item={c} lang={lang} />
               ))}
             </div>
           )}
@@ -251,7 +251,7 @@ export default function StudentDashboard() {
   );
 }
 
-function CaseRowCompact({ item }: { item: CaseAssignmentDto }) {
+function CaseRowCompact({ item, lang }: { item: CaseAssignmentDto; lang: "ar" | "en" }) {
   const { t } = useTranslation();
   return (
     <Link
@@ -264,7 +264,7 @@ function CaseRowCompact({ item }: { item: CaseAssignmentDto }) {
           <StatusBadge type="case" value={item.status} />
         </div>
         <div className="text-xs text-muted-foreground truncate">
-          {item.clinicName} • {item.diagnosis} • {item.sessions.length} {t("student.session")}
+          {lang === 'en' ? (item.clinicNameEn || item.clinicName) : item.clinicName} • {lang === 'en' ? (item.diagnosisEn || item.diagnosis) : item.diagnosis} • {item.sessions.length} {t("student.session")}
         </div>
       </div>
       <ArrowRight className="h-4 w-4 text-muted-foreground rtl-flip flex-shrink-0" />

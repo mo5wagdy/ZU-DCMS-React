@@ -20,7 +20,7 @@ import { formatDate } from "@/utils/format";
  * needing a new endpoint.
  */
 export default function AdminUserDetail() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { id } = useParams<{ id: string }>();
 
   const userQ = useFetch(
@@ -92,7 +92,7 @@ export default function AdminUserDetail() {
                 icon={<Calendar className="h-4 w-4" />}
                 label={t("admin.createdAt")}
                 value={
-                  userQ.data.createdAt ? formatDate(userQ.data.createdAt) : "—"
+                  userQ.data.createdAt ? formatDate(userQ.data.createdAt, i18n.language as "ar" | "en") : "—"
                 }
               />
             </div>

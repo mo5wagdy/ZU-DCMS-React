@@ -54,11 +54,7 @@ export default function StaffLogin() {
   return (
     <AuthLayout
       title={t("auth.staffLogin")}
-      footer={
-        <Link to="/auth/login" className="text-primary hover:underline">
-          {t("auth.patientLogin")}
-        </Link>
-      }
+      footer={null}
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
         <div>
@@ -71,7 +67,7 @@ export default function StaffLogin() {
             {...register("email")}
             className="mt-1"
           />
-          {errors.email && <p className="text-xs text-destructive mt-1">{errors.email.message}</p>}
+          {errors.email && <p className="text-xs text-destructive mt-1">{t(errors.email.message!)}</p>}
         </div>
         <div>
           <Label htmlFor="password">{t("auth.password")}</Label>
@@ -83,7 +79,7 @@ export default function StaffLogin() {
             className="mt-1"
           />
           {errors.password && (
-            <p className="text-xs text-destructive mt-1">{errors.password.message}</p>
+            <p className="text-xs text-destructive mt-1">{t(errors.password.message!)}</p>
           )}
         </div>
         <ErrorMessage message={error} />

@@ -44,6 +44,9 @@ export const CaseStatus = {
   PendingReview: 4,
   Approved: 5,
   Rejected: 6,
+  PendingAssignmentApproval: 7,
+  EscalatedToSpecialist: 8,
+  TransferredToIntern: 9,
 } as const;
 
 export function hasFlag(value: number | string | undefined | null, flag: number | string): boolean {
@@ -92,7 +95,10 @@ export function caseStatusKey(status: number): string {
     3: "transferred",
     4: "pendingReview",
     5: "approved",
-    6: "rejected"
+    6: "rejected",
+    7: "pendingAssignmentApproval",
+    8: "escalatedToSpecialist",
+    9: "transferredToIntern",
   };
   return map[status] ?? "inProgress";
 }

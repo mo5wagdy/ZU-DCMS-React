@@ -70,6 +70,7 @@ export default function AdminUsers() {
   const [sortBy, setSortBy] = useState("createdAt");
   const [sortDescending, setSortDescending] = useState(true);
   const { refreshTick } = useUIStore();
+  const { i18n } = useTranslation();
 
   useEffect(() => {
     let mounted = true;
@@ -202,8 +203,8 @@ export default function AdminUsers() {
                   <h3 className="font-bold text-lg">{t("admin.noUsers")}</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">
                     {search || role 
-                      ? t("common.noResultsFilter") || "لم نجد مستخدمين يطابقون بحثك الحالي. جرب تغيير الفلتر أو كلمة البحث." 
-                      : t("admin.noUsersDescription") || "لا يوجد مستخدمين مسجلين في النظام حالياً."}
+                      ? t("common.noResultsFilter", "لم نجد مستخدمين يطابقون بحثك الحالي. جرب تغيير الفلتر أو كلمة البحث.") 
+                      : t("admin.noUsersDescription", "لا يوجد مستخدمين مسجلين في النظام حالياً.")}
                   </p>
                 </div>
               </div>
@@ -283,7 +284,7 @@ export default function AdminUsers() {
                             )}
                           </td>
                           <td className="py-3.5 px-4 hidden lg:table-cell text-muted-foreground text-xs">
-                            {u.createdAt ? formatDate(u.createdAt) : "—"}
+                            {u.createdAt ? formatDate(u.createdAt, i18n.language as "ar" | "en") : "—"}
                           </td>
                         </tr>
                       ))}

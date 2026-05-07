@@ -11,15 +11,18 @@ import { ErrorMessage } from "@/components/shared/ErrorMessage";
 import { adminApi } from "@/api/admin.api";
 import { termApi } from "@/api/term.api";
 import { useFetch } from "@/hooks/useFetch";
+import { useUIStore } from "@/store/ui.store";
 import type { DailyMetricsDto } from "@/types";
 
 // __ ViewDashboard: Read-only daily overview for Dean, Vice-Dean, and Professors __ //
 export default function ViewDashboard() {
   const { t } = useTranslation();
 
+  const { refreshTick } = useUIStore();
+
   // __ Fetch daily metrics and active term in parallel __ //
-  const metricsQ = useFetch(() => adminApi.getDailyMetrics(), []);
-  const termQ = useFetch(() => termApi.active(), []);
+  const metricsQ = useFetch(() => adminApi.getDailyMetrics(), [refreshTick]);
+  const termQ = useFetch(() => termApi.active(), [refreshTick]);
 
   const loading = metricsQ.loading || termQ.loading;
   const error = metricsQ.error || termQ.error;

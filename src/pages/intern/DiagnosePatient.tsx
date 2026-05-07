@@ -54,6 +54,7 @@ export default function DiagnosePatient() {
   const navigate = useNavigate();
   const { userId } = useAuth();
   const { bookingId } = useParams<{ bookingId: string }>();
+  const lang = useUIStore((s) => s.language);
 
   const [clinics, setClinics] = useState<ClinicDto[]>([]);
   const [diagnosisTypes, setDiagnosisTypes] = useState<DiagnosisTypeDto[]>([]);
@@ -309,7 +310,7 @@ function AssignStudentPanel({
 }) {
   const { t } = useTranslation();
   const { userId } = useAuth();
-  const { refreshTick } = useUIStore();
+  const { refreshTick, language: lang } = useUIStore();
   const [students, setStudents] = useState<StudentPriorityDto[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [assigning, setAssigning] = useState<number | null>(null);
@@ -363,13 +364,13 @@ function AssignStudentPanel({
                 {diagnosis.isAssigned ? t("intern.assigned") : t("intern.diagnosisSaved")}
               </div>
               <div className="text-muted-foreground">
-                {diagnosis.clinicName} — {diagnosis.diagnosisTypeName}
+                {lang === 'en' ? (diagnosis.clinicNameEn || diagnosis.clinicName) : diagnosis.clinicName} — {lang === 'en' ? (diagnosis.diagnosisTypeNameEn || diagnosis.diagnosisTypeName) : diagnosis.diagnosisTypeName}
               </div>
             </div>
           </div>
           {diagnosis.isAssigned && (
             <div className="text-end">
-              <div className="text-xs text-muted-foreground">{t("intern.assignedTo")}</div>
+              <div className="text-xs font-semibold text-warning mb-1">{t("ta.pendingAssignmentApproval", "بانتظار موافقة المعيد")}</div>
               <div className="text-sm font-bold text-success">{diagnosis.studentName}</div>
               <div className="text-[10px] font-mono opacity-60">{diagnosis.studentCode}</div>
             </div>

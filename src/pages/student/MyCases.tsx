@@ -41,7 +41,13 @@ export default function MyCases() {
 
   const filtered = useMemo(() => {
     if (!cases) return [];
-    let list = cases;
+    // __ Hide rejected assignments or pending approval assignments since they no longer belong to the student __ //
+    let list = cases.filter(c => 
+      c.status !== CaseStatus.PendingAssignmentApproval &&
+      c.status !== CaseStatus.EscalatedToSpecialist &&
+      c.status !== CaseStatus.TransferredToIntern
+    );
+    
     if (filter === "active") {
       list = list.filter(
         (c) =>
@@ -133,8 +139,8 @@ function CaseRow({ item, lang }: { item: CaseAssignmentDto; lang: "ar" | "en" })
             <StatusBadge type="case" value={item.status} />
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-            <Field label={t("student.clinic")} value={item.clinicName} />
-            <Field label={t("student.diagnosis")} value={item.diagnosis} />
+            <Field label={t("student.clinic")} value={lang === 'en' ? (item.clinicNameEn || item.clinicName) : item.clinicName} />
+            <Field label={t("student.diagnosis")} value={lang === 'en' ? (item.diagnosisEn || item.diagnosis) : item.diagnosis} />
             <Field
               label={t("student.sessionsCount")}
               value={String(item.sessions.length)}

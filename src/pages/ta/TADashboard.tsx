@@ -11,6 +11,8 @@ import { formatDate } from "@/utils/format";
 import { useUIStore } from "@/store/ui.store";
 import { useFetch } from "@/hooks/useFetch";
 import type { CaseAssignmentDto } from "@/types";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { useAuthStore } from "@/store/auth.store";
 
 /**
  * TA dashboard — single source of truth for cases awaiting review.
@@ -19,56 +21,115 @@ import type { CaseAssignmentDto } from "@/types";
 export default function TADashboard() {
   const { t } = useTranslation();
   const lang = useUIStore((s) => s.language);
-  const { data: cases, loading, error } = useFetch<CaseAssignmentDto[]>(
+  const { data: reviews, loading: reviewsLoading, error: reviewsError } = useFetch<CaseAssignmentDto[]>(
     () => caseApi.pendingReviews(),
+    []
+  );
+
+  const { data: assignments, loading: assignmentsLoading, error: assignmentsError } = useFetch<CaseAssignmentDto[]>(
+    () => caseApi.pendingAssignments(),
     []
   );
 
   return (
     <div className="container py-8 max-w-5xl space-y-6">
-      <div className="flex items-center gap-3">
-        <div className="grid h-12 w-12 place-items-center rounded-xl gradient-hero text-primary-foreground shadow-card">
-          <ClipboardCheck className="h-6 w-6" />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="grid h-12 w-12 place-items-center rounded-xl gradient-hero text-primary-foreground shadow-card">
+            <ClipboardCheck className="h-6 w-6" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold">{t("ta.dashboard")}</h1>
+            <p className="text-sm text-muted-foreground">{t("ta.pendingReviews")}</p>
+          </div>
         </div>
-        <div>
-          <h1 className="text-2xl font-bold">{t("ta.dashboard")}</h1>
-          <p className="text-sm text-muted-foreground">{t("ta.pendingReviews")}</p>
-        </div>
+        <Button variant="outline" asChild className="rounded-xl">
+          <Link to="/ta/history">
+            {t("ta.reviewHistory")}
+          </Link>
+        </Button>
       </div>
 
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg flex items-center justify-between">
-            <span className="flex items-center gap-2">
-              <ClipboardCheck className="h-5 w-5 text-accent" />
-              {t("ta.pendingReviews")}
-            </span>
-            {cases && (
-              <Badge variant="outline" className="bg-accent/10 text-accent border-accent/30">
-                {cases.length}
+      <Tabs defaultValue="assignments" className="w-full">
+        <TabsList className="mb-4">
+          <TabsTrigger value="assignments">
+            {t("ta.assignmentApprovals", "موافقات التعيين")}
+            {assignments && assignments.length > 0 && (
+              <Badge variant="secondary" className="ms-2">
+                {assignments.length}
               </Badge>
             )}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {loading && <ListSkeleton rows={3} />}
-          <ErrorMessage message={error} />
-          {!loading && cases && cases.length === 0 && (
-            <div className="py-12 text-center">
-              <CheckCircle2 className="h-12 w-12 mx-auto text-success mb-3" />
-              <p className="font-semibold">{t("ta.noPending")}</p>
-              <p className="text-sm text-muted-foreground mt-1">{t("ta.noPendingDesc")}</p>
-            </div>
-          )}
-          {!loading && cases && cases.length > 0 && (
-            <div className="space-y-3">
-              {cases.map((c) => (
-                <CaseRow key={c.id} item={c} lang={lang} />
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+          </TabsTrigger>
+          <TabsTrigger value="reviews">
+            {t("ta.treatmentReviews", "مراجعات العلاج")}
+            {reviews && reviews.length > 0 && (
+              <Badge variant="secondary" className="ms-2">
+                {reviews.length}
+              </Badge>
+            )}
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="assignments">
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg flex items-center justify-between">
+                <span className="flex items-center gap-2">
+                  <ClipboardCheck className="h-5 w-5 text-accent" />
+                  {t("ta.pendingAssignments", "تعيينات بانتظار الموافقة")}
+                </span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {assignmentsLoading && <ListSkeleton rows={3} />}
+              <ErrorMessage message={assignmentsError} />
+              {!assignmentsLoading && assignments && assignments.length === 0 && (
+                <div className="py-12 text-center">
+                  <CheckCircle2 className="h-12 w-12 mx-auto text-success mb-3" />
+                  <p className="font-semibold">{t("ta.noPending", "لا توجد حالات معلقة")}</p>
+                </div>
+              )}
+              {!assignmentsLoading && assignments && assignments.length > 0 && (
+                <div className="space-y-3">
+                  {assignments.map((c) => (
+                    <AssignmentRow key={c.id} item={c} lang={lang} />
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="reviews">
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg flex items-center justify-between">
+                <span className="flex items-center gap-2">
+                  <ClipboardCheck className="h-5 w-5 text-accent" />
+                  {t("ta.pendingReviews")}
+                </span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {reviewsLoading && <ListSkeleton rows={3} />}
+              <ErrorMessage message={reviewsError} />
+              {!reviewsLoading && reviews && reviews.length === 0 && (
+                <div className="py-12 text-center">
+                  <CheckCircle2 className="h-12 w-12 mx-auto text-success mb-3" />
+                  <p className="font-semibold">{t("ta.noPending")}</p>
+                </div>
+              )}
+              {!reviewsLoading && reviews && reviews.length > 0 && (
+                <div className="space-y-3">
+                  {reviews.map((c) => (
+                    <CaseRow key={c.id} item={c} lang={lang} />
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
@@ -87,7 +148,7 @@ function CaseRow({ item, lang }: { item: CaseAssignmentDto; lang: "ar" | "en" })
           <div className="flex flex-wrap items-center gap-2">
             <h3 className="font-semibold">{item.patientName}</h3>
             <Badge variant="outline" className="text-xs">
-              {item.clinicName}
+              {lang === 'en' ? (item.clinicNameEn || item.clinicName) : item.clinicName}
             </Badge>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
@@ -96,7 +157,7 @@ function CaseRow({ item, lang }: { item: CaseAssignmentDto; lang: "ar" | "en" })
               label={t("ta.student")}
               value={item.studentName}
             />
-            <Field label={t("student.diagnosis")} value={item.diagnosis} />
+            <Field label={t("student.diagnosis")} value={lang === 'en' ? (item.diagnosisEn || item.diagnosis) : item.diagnosis} />
             <Field label={t("ta.totalSessions")} value={String(item.sessions.length)} />
             <Field label={t("ta.completedSessions")} value={String(completedSessions)} />
           </div>
@@ -128,5 +189,44 @@ function Field({
       </div>
       <div className="font-medium truncate">{value}</div>
     </div>
+  );
+}
+
+// Assignment Row for pre-treatment
+function AssignmentRow({ item, lang }: { item: CaseAssignmentDto; lang: "ar" | "en" }) {
+  const { t } = useTranslation();
+  return (
+    <Link
+      to={`/ta/assignment/${item.id}`}
+      className="block rounded-xl border border-warning/40 bg-warning/5 p-4 hover:border-warning transition-colors"
+    >
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <div className="min-w-0 flex-1 space-y-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="font-semibold">{item.patientName}</h3>
+            <Badge variant="outline" className="text-xs bg-warning/10 text-warning border-warning/20">
+              {t("ta.newAssignment", "تعيين جديد")}
+            </Badge>
+            <Badge variant="outline" className="text-xs">
+              {lang === 'en' ? (item.clinicNameEn || item.clinicName) : item.clinicName}
+            </Badge>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+            <Field
+              icon={<GraduationCap className="h-3 w-3" />}
+              label={t("ta.student")}
+              value={item.studentName}
+            />
+            <Field label={t("student.diagnosis")} value={lang === 'en' ? (item.diagnosisEn || item.diagnosis) : item.diagnosis} />
+            <Field label={t("ta.assignedBy", "تم التعيين بواسطة")} value={item.assignedByInternName} />
+            <Field label={t("ta.assignedAt", "تاريخ التعيين")} value={formatDate(item.assignedAt, lang)} />
+          </div>
+        </div>
+        <Button size="sm" variant="default" className="md:flex-shrink-0">
+          {t("ta.reviewAssignment", "مراجعة التعيين")}
+          <ArrowRight className="h-4 w-4 rtl-flip" />
+        </Button>
+      </div>
+    </Link>
   );
 }

@@ -27,7 +27,9 @@ import CaseDetail from "@/pages/student/CaseDetail";
 import StudentProgress from "@/pages/student/StudentProgress";
 
 import TADashboard from "@/pages/ta/TADashboard";
+import TAHistory from "@/pages/ta/TAHistory";
 import ReviewCase from "@/pages/ta/ReviewCase";
+import ReviewAssignment from "@/pages/ta/ReviewAssignment";
 
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 import AdminUsers from "@/pages/admin/AdminUsers";
@@ -86,12 +88,13 @@ const router = createBrowserRouter([
         ],
       },
 
-      // TA
       {
         element: <ProtectedRoute allowedRoles={["TeachingAssistant"]} />,
         children: [
           { path: "ta/dashboard", element: <TADashboard /> },
+          { path: "ta/history", element: <TAHistory /> },
           { path: "ta/review/:caseId", element: <ReviewCase /> },
+          { path: "ta/assignment/:id", element: <ReviewAssignment /> },
         ],
       },
 

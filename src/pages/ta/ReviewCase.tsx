@@ -201,8 +201,8 @@ export default function ReviewCase() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
-            <Field label={t("student.clinic")} value={data.clinicName} />
-            <Field label={t("student.diagnosis")} value={data.diagnosis} />
+            <Field label={t("student.clinic")} value={lang === 'en' ? (data.clinicNameEn || data.clinicName) : data.clinicName} />
+            <Field label={t("student.diagnosis")} value={lang === 'en' ? (data.diagnosisEn || data.diagnosis) : data.diagnosis} />
             <Field
               label={t("ta.student")}
               value={data.assignedByInternName}
@@ -369,7 +369,7 @@ function SessionRow({
             <p className="text-sm text-muted-foreground">{t("student.noProcedures")}</p>
           ) : (
             <div className="flex flex-wrap gap-1.5">
-              {session.proceduresNames.map((p, i) => (
+              {(lang === 'en' ? (session.proceduresNamesEn || session.proceduresNames) : session.proceduresNames).map((p, i) => (
                 <Badge key={i} variant="secondary" className="text-xs">
                   {p}
                 </Badge>

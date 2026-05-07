@@ -33,6 +33,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { useFetch } from "@/hooks/useFetch";
 import { patientApi } from "@/api/patient.api";
+import { useUIStore } from "@/store/ui.store";
 
 interface NavItem {
   to: string;
@@ -99,18 +100,32 @@ export function AppSidebar() {
   const collapsed = state === "collapsed";
   const location = useLocation();
 
+  const { refreshTick } = useUIStore();
   const patientQ = useFetch(
     () => (role?.toLowerCase() === "patient" && userId ? patientApi.byUserId(userId) : Promise.resolve(null as never)),
-    [userId, role]
+    [userId, role, refreshTick]
   );
-
-  const canBook = !patientQ.data?.hasActiveBooking && !patientQ.data?.hasActiveCase;
 
   const rawItems = itemsForRole(role);
   const items = rawItems.filter(item => {
-    if (item.to === "/booking/new" || item.to === "/booking/followup") {
-      return canBook;
+    const hasActiveBooking = patientQ.data?.hasActiveBooking;
+    const hasActiveCase = patientQ.data?.hasActiveCase;
+
+    // __ Hide all booking options if patient already has an active booking __ //
+    if (hasActiveBooking && (item.to === "/booking/new" || item.to === "/booking/followup")) {
+      return false;
     }
+
+    // __ Follow-up ONLY if they have an active case __ //
+    if (item.to === "/booking/followup") {
+      return !!hasActiveCase;
+    }
+
+    // __ New appointment ONLY if they DON'T have an active case (they should use follow-up instead) __ //
+    if (item.to === "/booking/new") {
+      return !hasActiveCase;
+    }
+
     return true;
   });
 

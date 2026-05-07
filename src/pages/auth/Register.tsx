@@ -75,7 +75,7 @@ const schema = z
       if (data.identityNumber.length !== 14 || !/^\d+$/.test(data.identityNumber)) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "الرقم القومي المصري يجب أن يكون 14 رقم صحيح",
+          message: i18next.t("الرقم القومي المصري يجب أن يكون 14 رقم صحيح"),
           path: ["identityNumber"],
         });
       }
@@ -191,7 +191,7 @@ export default function Register() {
             <div>
               <Label>{t("auth.fullName")}</Label>
               <Input className="mt-1" {...register("fullName")} />
-              {errors.fullName && <p className="text-xs text-destructive mt-1">{errors.fullName.message}</p>}
+              {errors.fullName && <p className="text-xs text-destructive mt-1">{t(errors.fullName.message!)}</p>}
             </div>
 
             {(() => {
@@ -209,7 +209,7 @@ export default function Register() {
                   <div className="animate-in fade-in slide-in-from-top-2 duration-300">
                     <Label>{t("auth.parentName")}</Label>
                     <Input className="mt-1 border-accent/40" {...register("parentName")} placeholder={t("auth.parentNamePlaceholder")} />
-                    {errors.parentName && <p className="text-xs text-destructive mt-1">{errors.parentName.message}</p>}
+                    {errors.parentName && <p className="text-xs text-destructive mt-1">{t(errors.parentName.message!)}</p>}
                   </div>
                 );
               }
@@ -219,7 +219,7 @@ export default function Register() {
             <div>
               <Label>{t("auth.phone")}</Label>
               <Input className="mt-1" dir="ltr" type="tel" placeholder="01XXXXXXXXX" {...register("phoneNumber")} />
-              {errors.phoneNumber && <p className="text-xs text-destructive mt-1">{errors.phoneNumber.message}</p>}
+              {errors.phoneNumber && <p className="text-xs text-destructive mt-1">{t(errors.phoneNumber.message!)}</p>}
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -270,19 +270,19 @@ export default function Register() {
                     if (age >= 5 && age <= 17) {
                       return <p className="text-[10px] text-accent mt-1 font-semibold">{t("auth.childIdentityHint")}</p>;
                     }
-                    return <p className="text-[10px] text-accent mt-1">{t("identityType.1")} - 14 رقم</p>;
+                    return <p className="text-[10px] text-accent mt-1">{t("identityType.1")} - {t("auth.14digits", "14 رقم")}</p>;
                   }
                   return null;
                 })()}
               </div>
             </div>
-            {errors.identityNumber && <p className="text-xs text-destructive">{errors.identityNumber.message}</p>}
+            {errors.identityNumber && <p className="text-xs text-destructive">{t(errors.identityNumber.message!)}</p>}
             <p className="text-[11px] text-muted-foreground">{t("auth.willBeUsedAsPassword")}</p>
 
             <div>
               <Label>{t("auth.dateOfBirth")}</Label>
               <Input className="mt-1" type="date" {...register("dateOfBirth")} />
-              {errors.dateOfBirth && <p className="text-xs text-destructive mt-1">{errors.dateOfBirth.message}</p>}
+              {errors.dateOfBirth && <p className="text-xs text-destructive mt-1">{t(errors.dateOfBirth.message!)}</p>}
             </div>
             <div>
               <Label>{t("auth.gender")}</Label>
@@ -361,11 +361,11 @@ export default function Register() {
                 </Select>
               </div>
             </div>
-            {errors.address && <p className="text-xs text-destructive mt-1">{errors.address.message}</p>}
+            {errors.address && <p className="text-xs text-destructive mt-1">{t(errors.address.message!)}</p>}
             <div>
               <Label>{t("auth.email")} <span className="text-muted-foreground text-xs">({t("common.optional")})</span></Label>
               <Input className="mt-1" type="email" dir="ltr" {...register("email")} />
-              {errors.email && <p className="text-xs text-destructive mt-1">{errors.email.message}</p>}
+              {errors.email && <p className="text-xs text-destructive mt-1">{t(errors.email.message!)}</p>}
             </div>
           </div>
         )}

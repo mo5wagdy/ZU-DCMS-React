@@ -82,14 +82,6 @@ export default function PatientLogin() {
               {t("auth.registerNow")}
             </Link>
           </div>
-          <div>
-            <Link
-              to="/auth/staff-login"
-              className="text-xs text-muted-foreground hover:text-primary"
-            >
-              {t("landing.staffLogin")}
-            </Link>
-          </div>
         </div>
       }
     >
@@ -107,7 +99,7 @@ export default function PatientLogin() {
             className="mt-1"
           />
           {errors.phoneNumber && (
-            <p className="text-xs text-destructive mt-1">{errors.phoneNumber.message}</p>
+            <p className="text-xs text-destructive mt-1">{t(errors.phoneNumber.message!)}</p>
           )}
         </div>
         <div>
@@ -129,7 +121,7 @@ export default function PatientLogin() {
             </button>
           </div>
           {errors.identityNumber && (
-            <p className="text-xs text-destructive mt-1">{errors.identityNumber.message}</p>
+            <p className="text-xs text-destructive mt-1">{t(errors.identityNumber.message!)}</p>
           )}
         </div>
         <ErrorMessage message={error} />

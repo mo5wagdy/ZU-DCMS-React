@@ -6,6 +6,7 @@ import type {
   CaseSessionDto,
   StudentProgressDto,
   ReviewCaseDto,
+  ReviewAssignmentDto,
 } from "@/types";
 
 export const caseApi = {
@@ -31,6 +32,14 @@ export const caseApi = {
     call<CaseAssignmentDto[]>(
       api.get<ApiResponse<CaseAssignmentDto[]>>("/cases/pending-reviews") as any
     ),
+  pendingAssignments: () =>
+    call<CaseAssignmentDto[]>(
+      api.get<ApiResponse<CaseAssignmentDto[]>>("/cases/pending-assignments") as any
+    ),
+  reviewAssignment: (cmd: { taUserId: string; dto: ReviewAssignmentDto }) =>
+    call<string>(
+      api.post<ApiResponse<string>>("/cases/assignment-review", cmd) as any
+    ),
   byId: (caseAssignmentId: number) =>
     call<CaseAssignmentDto>(
       api.get<ApiResponse<CaseAssignmentDto>>(`/cases/${caseAssignmentId}`) as any
@@ -50,5 +59,13 @@ export const caseApi = {
       api.get<ApiResponse<CaseAssignmentDto[]>>("/cases/today-patients", {
         params: { userId },
       }) as any
+    ),
+  reviewedCases: (taUserId: string) =>
+    call<CaseAssignmentDto[]>(
+      api.get<ApiResponse<CaseAssignmentDto[]>>(`/cases/reviewed-by/${taUserId}`) as any
+    ),
+  reviewedAssignments: (taUserId: string) =>
+    call<CaseAssignmentDto[]>(
+      api.get<ApiResponse<CaseAssignmentDto[]>>(`/cases/reviewed-assignments/${taUserId}`) as any
     ),
 };

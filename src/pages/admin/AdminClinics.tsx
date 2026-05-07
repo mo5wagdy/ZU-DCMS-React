@@ -65,7 +65,7 @@ export default function AdminClinics() {
                     <Stethoscope className="h-5 w-5" />
                   </div>
                   <div>
-                    <div className="font-semibold">{c.name}</div>
+                    <div className="font-semibold leading-relaxed pb-0.5">{c.name}</div>
                     <div className="text-xs text-muted-foreground">ID: {c.id}</div>
                   </div>
                 </div>

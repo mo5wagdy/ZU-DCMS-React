@@ -42,6 +42,7 @@ export const ARABIC_MAPPING: Record<string, string> = {
   "New Valley": "الوادي الجديد",
   "Ash Sharqiyah": "الشرقية",
   "Sharkia": "الشرقية",
+  "Sharqia": "الشرقية",
   "Al Sharqia": "الشرقية",
   "Aswan": "أسوان",
   "Asyut": "أسيوط",

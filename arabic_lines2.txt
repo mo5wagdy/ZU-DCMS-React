@@ -1,0 +1,63 @@
+components/booking/BookFlow.tsx:91 -> setError(t("booking.sessionEnded", "عذراً، لقد انتهى وقت هذا الميعاد حالياً. يرجى العودة للخطوة الأولى واختيار ميعاد آخر."));
+components/booking/BookFlow.tsx:150 -> <h2 className="font-bold text-lg mb-2">{t("booking.activeBookingTitle", "تنبيه: يوجد حجز نشط")}</h2>
+components/booking/BookFlow.tsx:151 -> <p>{t("booking.activeBookingDesc", "لا يمكنك حجز موعد جديد حالياً لأن لديك حجز قيد الانتظار أو أنت قيد العلاج في عيادة أخرى. يرجى إتمام حجزك الحالي أو إلغائه أولاً.")}</p>
+components/booking/BookFlow.tsx:163 -> <h2 className="font-bold text-lg mb-2">{t("booking.activeCaseTitle", "تنبيه: لديك حالة متابعة")}</h2>
+components/booking/BookFlow.tsx:164 -> <p>{t("booking.activeCaseDesc", "لديك حالة علاجية قائمة بالفعل. يرجى استخدام خيار 'حجز متابعة' بدلاً من حجز موعد جديد لتكملة علاجك.")}</p>
+components/booking/BookFlow.tsx:173 -> <h2 className="font-bold text-lg mb-2">{t("booking.noActiveCaseTitle", "تنبيه: لا توجد حالات متابعة")}</h2>
+components/booking/BookFlow.tsx:174 -> <p>{t("booking.noActiveCaseDesc", "ليس لديك حالات علاجية قائمة حالياً تتطلب متابعة. يرجى حجز موعد جديد للفحص.")}</p>
+components/shared/LanguageToggle.tsx:16 -> <span className="font-semibold">{language === "ar" ? "EN" : "عربي"}</span>
+components/shared/PlaceholderPage.tsx:15 -> هذه الصفحة جاهزة للبناء. الـ API endpoints والـ types والـ design system كلها جاهزة.
+components/shared/PlaceholderPage.tsx:16 -> اطلب صفحة محددة لبنائها بالتفصيل.
+pages/admin/AdminRequirements.tsx:145 -> toast.success(t("admin.termRequirementsUpdated", "تم تحديث متطلبات الترم بنجاح"));
+pages/admin/AdminRequirements.tsx:185 -> {t("admin.individualMode", "طلاب")}
+pages/admin/AdminRequirements.tsx:193 -> {t("admin.termMode", "متطلبات الترم")}
+pages/admin/AdminRequirements.tsx:205 -> {mode === "individual" ? t("admin.selectStudent") : t("admin.selectAcademicYear", "اختر السنة الدراسية")}
+pages/admin/AdminRequirements.tsx:278 -> : (selectedYear ? `${t("student.academicYear")} ${selectedYear}` : t("admin.selectYearFirst", "اختر السنة الدراسية"))}
+pages/admin/AdminRequirements.tsx:281 -> {t("admin.bulkApply", "تحديث جماعي")}
+pages/admin/AdminRequirements.tsx:299 -> {mode === "individual" ? t("admin.selectStudentFirst") : t("admin.selectYearFirst", "يرجى اختيار السنة الدراسية للبدء")}
+pages/admin/AdminRequirements.tsx:310 -> {t("admin.noClinicsForYear", "لا توجد عيادات متاحة لهذه السنة")}
+pages/admin/AdminUsers.tsx:206 -> ? t("common.noResultsFilter", "لم نجد مستخدمين يطابقون بحثك الحالي. جرب تغيير الفلتر أو كلمة البحث.")
+pages/admin/AdminUsers.tsx:207 -> : t("admin.noUsersDescription", "لا يوجد مستخدمين مسجلين في النظام حالياً.")}
+pages/auth/ForgotPhone.tsx:25 -> identityNumber: z.string().trim().min(6, { message: "رقم الهوية مطلوب" }).max(20),
+pages/auth/ForgotPhone.tsx:30 -> { value: 1, labelAr: "رقم قومي", labelEn: "National ID" },
+pages/auth/ForgotPhone.tsx:31 -> { value: 2, labelAr: "جواز سفر", labelEn: "Passport" },
+pages/auth/ForgotPhone.tsx:32 -> { value: 3, labelAr: "رقم إقامة", labelEn: "Residence Permit" },
+pages/auth/PatientLogin.tsx:23 -> .regex(/^\+?[0-9]{10,15}$/, { message: "رقم الهاتف غير صحيح" }),
+pages/auth/PatientLogin.tsx:24 -> identityNumber: z.string().trim().min(6, { message: "رقم الهوية مطلوب" }).max(20),
+pages/auth/Register.tsx:36 -> fullName: z.string().trim().min(3, { message: "الاسم قصير" }).max(100),
+pages/auth/Register.tsx:41 -> .regex(/^\+?[0-9]{10,15}$/, { message: "رقم تليفون غير صحيح" }),
+pages/auth/Register.tsx:48 -> }, { message: "تاريخ ميلاد غير صحيح" }),
+pages/auth/Register.tsx:51 -> message: "الصيغة: الدولة,المحافظة",
+pages/auth/Register.tsx:78 -> message: i18next.t("الرقم القومي المصري يجب أن يكون 14 رقم صحيح"),
+pages/auth/Register.tsx:273 -> return <p className="text-[10px] text-accent mt-1">{t("identityType.1")} - {t("auth.14digits", "14 رقم")}</p>;
+pages/auth/StaffLogin.tsx:19 -> email: z.string().trim().email({ message: "بريد إلكتروني غير صحيح" }),
+pages/auth/StaffLogin.tsx:20 -> password: z.string().min(6, { message: "كلمة المرور قصيرة" }),
+pages/intern/DiagnosePatient.tsx:373 -> <div className="text-xs font-semibold text-warning mb-1">{t("ta.pendingAssignmentApproval", "بانتظار موافقة المعيد")}</div>
+pages/intern/SessionPatients.tsx:286 -> {t("common.noChronicConditions", "لا توجد أمراض مزمنة مسجلة")}
+pages/patient/PatientProfile.tsx:183 -> <Label>{t("auth.country", "الدولة")}</Label>
+pages/patient/PatientProfile.tsx:211 -> <Label>{t("auth.governorate", "المحافظة")}</Label>
+pages/student/MyCases.tsx:44 -> // __ إخفاء الحالات المرفوضة من المعيد (أو التي بانتظار الموافقة) لأنها لم تعد تخص الطالب __ //
+pages/ta/ReviewAssignment.tsx:40 -> toast.error(t("ta.notesRequiredForRejection", "يرجى كتابة سبب الرفض أو التحويل"));
+pages/ta/ReviewAssignment.tsx:55 -> toast.success(t("ta.assignmentReviewedSuccess", "تمت مراجعة التعيين بنجاح"));
+pages/ta/ReviewAssignment.tsx:78 -> <h1 className="text-2xl font-bold">{t("ta.reviewAssignment", "مراجعة التعيين المبدئي")}</h1>
+pages/ta/ReviewAssignment.tsx:86 -> {t("ta.assignmentDetails", "تفاصيل التعيين")}
+pages/ta/ReviewAssignment.tsx:111 -> <p className="text-sm text-muted-foreground">{t("ta.assignedBy", "تم التعيين بواسطة")}</p>
+pages/ta/ReviewAssignment.tsx:115 -> <p className="text-sm text-muted-foreground">{t("ta.assignedAt", "تاريخ التعيين")}</p>
+pages/ta/ReviewAssignment.tsx:121 -> <h3 className="font-medium">{t("ta.reviewNotes", "ملاحظات المراجعة (إلزامية في حالة الرفض أو التحويل)")}</h3>
+pages/ta/ReviewAssignment.tsx:123 -> placeholder={t("ta.writeReviewNotes", "اكتب ملاحظاتك هنا...")}
+pages/ta/ReviewAssignment.tsx:139 -> {t("ta.approveAssignment", "الموافقة وبدء العلاج")}
+pages/ta/ReviewAssignment.tsx:149 -> {t("ta.escalateToSpecialist", "تصعيد لعيادة متخصصة")}
+pages/ta/ReviewAssignment.tsx:159 -> {t("ta.transferToIntern", "إرجاع لعيادة الامتياز")}
+pages/ta/TADashboard.tsx:56 -> {t("ta.assignmentApprovals", "موافقات التعيين")}
+pages/ta/TADashboard.tsx:64 -> {t("ta.treatmentReviews", "مراجعات العلاج")}
+pages/ta/TADashboard.tsx:79 -> {t("ta.pendingAssignments", "تعيينات بانتظار الموافقة")}
+pages/ta/TADashboard.tsx:89 -> <p className="font-semibold">{t("ta.noPending", "لا توجد حالات معلقة")}</p>
+pages/ta/TADashboard.tsx:208 -> {t("ta.newAssignment", "تعيين جديد")}
+pages/ta/TADashboard.tsx:221 -> <Field label={t("ta.assignedBy", "تم التعيين بواسطة")} value={item.assignedByInternName} />
+pages/ta/TADashboard.tsx:222 -> <Field label={t("ta.assignedAt", "تاريخ التعيين")} value={formatDate(item.assignedAt, lang)} />
+pages/ta/TADashboard.tsx:226 -> {t("ta.reviewAssignment", "مراجعة التعيين")}
+utils/format.ts:24 -> const ampm = h >= 12 ? (lang === "ar" ? "م" : "PM") : (lang === "ar" ? "ص" : "AM");
+utils/format.ts:37 -> return `من ${start} إلى ${end}`;
+utils/format.ts:53 -> "٠": "0", "١": "1", "٢": "2", "٣": "3", "٤": "4",
+utils/format.ts:54 -> "٥": "5", "٦": "6", "٧": "7", "٨": "8", "٩": "9",
+utils/format.ts:56 -> return str.replace(/[٠-٩]/g, (w) => arDigits[w]);

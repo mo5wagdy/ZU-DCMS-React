@@ -7,6 +7,7 @@ import { ErrorMessage } from "@/components/shared/ErrorMessage";
 import { StatsSkeleton } from "@/components/shared/Skeletons";
 import { useStudentContext } from "@/hooks/useStudentContext";
 import { caseApi } from "@/api/case.api";
+import { useUIStore } from "@/store/ui.store";
 import { useFetch } from "@/hooks/useFetch";
 import type { StudentProgressDto, StudentRequirementDto } from "@/types";
 
@@ -16,6 +17,7 @@ import type { StudentProgressDto, StudentRequirementDto } from "@/types";
  */
 export default function StudentProgress() {
   const { t } = useTranslation();
+  const lang = useUIStore(s => s.language);
   const { student, term, loading: ctxLoading, error: ctxError } = useStudentContext();
   const { data: progress, loading, error } = useFetch<StudentProgressDto | null>(
     () =>
@@ -106,7 +108,7 @@ export default function StudentProgress() {
               ) : (
                 <div className="grid gap-3 md:grid-cols-2">
                   {progress.requirements.map((r) => (
-                    <RequirementCard key={r.id} req={r} />
+                    <RequirementCard key={r.id} req={r} lang={lang} />
                   ))}
                 </div>
               )}
@@ -140,7 +142,7 @@ function Stat({
   );
 }
 
-function RequirementCard({ req }: { req: StudentRequirementDto }) {
+function RequirementCard({ req, lang }: { req: StudentRequirementDto; lang: "ar" | "en" }) {
   const { t } = useTranslation();
   const pct = Math.min(100, req.completionPercentage);
 
@@ -149,10 +151,12 @@ function RequirementCard({ req }: { req: StudentRequirementDto }) {
       <div className="flex items-start justify-between gap-2 mb-3">
         <div className="min-w-0">
           <h3 className="font-semibold truncate">
-            {req.requirementTypeName || req.clinicName}
+            {lang === 'en' ? (req.requirementTypeNameEn || req.requirementTypeName || req.clinicNameEn || req.clinicName) : (req.requirementTypeName || req.clinicName)}
           </h3>
           <div className="text-xs text-muted-foreground mt-0.5">
-            {req.requirementTypeName ? req.clinicName : `${t("intern.priority")}: ${req.priority}`}
+            {lang === 'en' 
+              ? (req.requirementTypeNameEn ? (req.clinicNameEn || req.clinicName) : `${t("intern.priority")}: ${req.priority}`)
+              : (req.requirementTypeName ? req.clinicName : `${t("intern.priority")}: ${req.priority}`)}
           </div>
         </div>
         {req.isSatisfied ? (

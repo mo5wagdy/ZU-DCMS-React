@@ -11,9 +11,10 @@ export function PlaceholderPage({ titleKey }: { titleKey: string }) {
           <Construction className="h-8 w-8" />
         </div>
         <h1 className="text-2xl font-bold mb-2">{t(titleKey)}</h1>
-        <p className="text-muted-foreground text-sm">
-          هذه الصفحة جاهزة للبناء. الـ API endpoints والـ types والـ design system كلها جاهزة.
-          اطلب صفحة محددة لبنائها بالتفصيل.
+        <p className="text-muted-foreground mt-2 max-w-sm mx-auto leading-relaxed">
+          {t("common.placeholderDesc1", "This page is ready to be built. API endpoints, types, and the design system are all set up.")}
+          <br />
+          {t("common.placeholderDesc2", "Request a specific page to build it in detail.")}
         </p>
       </Card>
     </div>

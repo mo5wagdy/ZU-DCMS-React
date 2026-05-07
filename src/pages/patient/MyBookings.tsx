@@ -104,12 +104,14 @@ export default function MyBookings() {
           </div>
         </div>
 
-        <Button asChild size="sm">
-          <Link to="/booking/new">
-            <CalendarPlus className="h-4 w-4 me-1" />
-            {t("booking.newAppointment")}
-          </Link>
-        </Button>
+        {!patientQ.data?.hasActiveBooking && (
+          <Button asChild size="sm">
+            <Link to={patientQ.data?.hasActiveCase ? "/booking/followup" : "/booking/new"}>
+              <CalendarPlus className="h-4 w-4 me-1" />
+              {patientQ.data?.hasActiveCase ? t("booking.followUp") : t("booking.newAppointment")}
+            </Link>
+          </Button>
+        )}
       </div>
 
       <Tabs value={filter} onValueChange={(v) => setFilter(v as FilterKey)}>
@@ -130,12 +132,14 @@ export default function MyBookings() {
           title={t("booking.noBookings")}
           description={t("booking.noBookingsDesc")}
           action={
-            <Button asChild size="sm">
-              <Link to="/booking/new">
-                <CalendarPlus className="h-4 w-4 me-1" />
-                {t("booking.newAppointment")}
-              </Link>
-            </Button>
+            !patientQ.data?.hasActiveBooking && (
+              <Button asChild size="sm">
+                <Link to={patientQ.data?.hasActiveCase ? "/booking/followup" : "/booking/new"}>
+                  <CalendarPlus className="h-4 w-4 me-1" />
+                  {patientQ.data?.hasActiveCase ? t("booking.followUp") : t("booking.newAppointment")}
+                </Link>
+              </Button>
+            )
           }
         />
       )}

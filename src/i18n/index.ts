@@ -27,6 +27,7 @@ const applyDir = (lng: string) => {
   const dir = lng === "ar" ? "rtl" : "ltr";
   document.documentElement.dir = dir;
   document.documentElement.lang = lng;
+  document.title = lng === "ar" ? "عيادات الأسنان - جامعة الزقازيق | ZU-DCMS" : "Dental Clinics - Zagazig University | ZU-DCMS";
 };
 applyDir(i18n.language || "ar");
 i18n.on("languageChanged", applyDir);

@@ -113,7 +113,7 @@ export default function ForgotPhone() {
               className="mt-1"
             />
             {errors.identityNumber && (
-              <p className="text-xs text-destructive mt-1">{errors.identityNumber.message}</p>
+              <p className="text-xs text-destructive mt-1">{t(errors.identityNumber.message!)}</p>
             )}
           </div>
           <ErrorMessage message={error} />

@@ -107,14 +107,14 @@ export async function call<T>(
     const res = await promise;
     if (!res.data?.isSuccess) {
       const msg = res.data?.errors?.[0] || res.data?.message || "Request failed";
-      throw new Error(msg);
+      throw new Error(i18next.t(msg));
     }
     return res.data.data as T;
   } catch (err) {
     const ax = err as AxiosError<{ message?: string; errors?: string[] }>;
     if (ax.isAxiosError) {
       const msg = ax.response?.data?.errors?.[0] || ax.response?.data?.message || ax.message;
-      throw new Error(msg);
+      throw new Error(i18next.t(msg));
     }
     throw err;
   }

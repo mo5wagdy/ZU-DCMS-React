@@ -11,10 +11,12 @@ import { ListSkeleton } from "@/components/shared/Skeletons";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { Pagination } from "@/components/shared/Pagination";
 import { studentApi } from "@/api/student.api";
+import { useUIStore } from "@/store/ui.store";
 import type { PagedResult, StudentDto } from "@/types";
 
 export default function ViewStudents() {
   const { t } = useTranslation();
+  const { refreshTick } = useUIStore();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
@@ -40,7 +42,7 @@ export default function ViewStudents() {
     return () => {
       mounted = false;
     };
-  }, [page, search, academicYear]);
+  }, [page, search, academicYear, refreshTick]);
 
   // Reactive search reset
   useEffect(() => {

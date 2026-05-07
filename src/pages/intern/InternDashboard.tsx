@@ -30,8 +30,12 @@ export default function InternDashboard() {
     []
   );
 
-  const today = new Date();
-  const otherSessions = recentSessions?.filter(s => new Date(s.date).toDateString() !== today.toDateString()) || [];
+  const nowTime = new Date().toTimeString().slice(0, 5) + ":00";
+  const todayStr = new Date();
+  
+  const activeTodaySessions = sessions || [];
+
+  const otherSessions = recentSessions?.filter(s => new Date(s.date).toDateString() !== todayStr.toDateString()) || [];
 
   return (
     <div className="container py-8 max-w-6xl space-y-8">
@@ -43,7 +47,7 @@ export default function InternDashboard() {
           <h1 className="text-2xl font-bold">{t("intern.dashboard")}</h1>
           <p className="text-sm text-muted-foreground flex items-center gap-2">
             <Calendar className="h-4 w-4" />
-            {formatDate(today, lang)}
+            {formatDate(todayStr, lang)}
           </p>
         </div>
       </div>
@@ -58,12 +62,12 @@ export default function InternDashboard() {
         <CardContent>
           {loading && <ListSkeleton rows={2} />}
           <ErrorMessage message={error} />
-          {!loading && sessions && sessions.length === 0 && (
+          {!loading && activeTodaySessions && activeTodaySessions.length === 0 && (
             <EmptyState title={t("intern.noSessionsToday")} />
           )}
-          {!loading && sessions && sessions.length > 0 && (
+          {!loading && activeTodaySessions && activeTodaySessions.length > 0 && (
             <div className="grid gap-4 md:grid-cols-2">
-              {sessions.map((s) => (
+              {activeTodaySessions.map((s) => (
                 <SessionCard key={s.id} session={s} />
               ))}
             </div>

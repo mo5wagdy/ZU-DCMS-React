@@ -180,7 +180,7 @@ export default function PatientProfile() {
             </div>
             <div className="sm:col-span-2 grid sm:grid-cols-2 gap-4">
               <div>
-                <Label>{t("auth.country") || "الدولة"}</Label>
+                <Label>{t("auth.country", "الدولة")}</Label>
                 {editing ? (
                   <Select
                     value={selectedCountryIso}
@@ -208,7 +208,7 @@ export default function PatientProfile() {
                 )}
               </div>
               <div>
-                <Label>{t("auth.governorate") || "المحافظة"}</Label>
+                <Label>{t("auth.governorate", "المحافظة")}</Label>
                 {editing ? (
                   <Select
                     value={selectedStateIso}

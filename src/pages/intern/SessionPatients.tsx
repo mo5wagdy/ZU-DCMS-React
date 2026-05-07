@@ -28,6 +28,8 @@ import type { BookingForDiagnosisDto, PagedResult } from "@/types";
  * Lists patients assigned to a specific session for diagnosis.
  * Interns use this to pick patients to diagnose.
  */
+const PAGE_SIZE = 10;
+
 export default function SessionPatients() {
   const { t } = useTranslation();
   const { sessionId } = useParams<{ sessionId: string }>();
@@ -35,7 +37,7 @@ export default function SessionPatients() {
   const [page, setPage] = useState(1);
 
   const { data, loading, error } = useFetch<PagedResult<BookingForDiagnosisDto>>(
-    () => sessionApi.patients(Number(sessionId), internId || "", page),
+    () => sessionApi.patients(Number(sessionId), internId || "", page, PAGE_SIZE),
     [sessionId, internId, page]
   );
 
@@ -98,6 +100,7 @@ function PatientRow({ patient }: { patient: BookingForDiagnosisDto }) {
   );
 
   const isCancelled = patient.status === BookingStatus.Cancelled;
+  const isDelayed = patient.status === BookingStatus.Delayed;
 
   return (
     <Card className={`overflow-hidden card-hover ${isCancelled ? "opacity-60 bg-muted/20" : ""}`}>
@@ -109,7 +112,12 @@ function PatientRow({ patient }: { patient: BookingForDiagnosisDto }) {
             </h3>
             {isCancelled ? (
               <Badge variant="destructive" className="bg-destructive/15 text-destructive border-destructive/30">
-                {t("status.cancelled")}
+                {t("booking.cancelled")}
+              </Badge>
+            ) : isDelayed ? (
+              <Badge variant="outline" className="bg-warning/10 text-warning border-warning/30">
+                <Activity className="h-3 w-3 me-1" />
+                {t("booking.delayed")}
               </Badge>
             ) : patient.isAssigned ? (
               <div className="flex flex-col gap-1">
@@ -275,7 +283,7 @@ function PatientDetailsDialog({ patient }: { patient: BookingForDiagnosisDto }) 
               </div>
             ) : (
               <p className="text-sm text-muted-foreground italic px-1">
-                {t("common.noChronicConditions") || "لا توجد أمراض مزمنة مسجلة"}
+                {t("common.noChronicConditions", "لا توجد أمراض مزمنة مسجلة")}
               </p>
             )}
           </div>

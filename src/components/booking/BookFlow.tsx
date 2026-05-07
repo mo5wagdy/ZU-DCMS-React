@@ -83,7 +83,28 @@ export function BookFlow({ bookingType }: Props) {
   }, [slots]);
 
   const submit = async () => {
-    if (!selected) return;
+    // __ Check if session has ended __ //
+    const nowTime = new Date().toTimeString().slice(0, 5) + ":00";
+    const today = new Date().toISOString().split("T")[0];
+    const sDate = selected!.date.split("T")[0];
+    if (sDate < today || (sDate === today && selected!.endTime <= nowTime)) {
+       setError(t("booking.sessionEnded", "عذراً، لقد انتهى وقت هذا الميعاد حالياً. يرجى العودة للخطوة الأولى واختيار ميعاد آخر."));
+       setStep(1);
+       setLoading(true); // Force re-fetch of slots
+       sessionApi.availableSlots(bookingType)
+         .then(data => {
+            const valid = data.filter(s => {
+              const sd = s.date.split("T")[0];
+              if (sd < today) return false;
+              if (sd === today && s.endTime <= nowTime) return false;
+              return true;
+            });
+            setSlots(valid);
+         })
+         .finally(() => setLoading(false));
+       return;
+    }
+
     setSubmitting(true);
     setError(null);
     try {
@@ -92,8 +113,8 @@ export function BookFlow({ bookingType }: Props) {
         PatientId: patient.id,
         dto: {
           bookingType,
-          preferredDate: selected.date,
-          preferredTimeSlot: formatTime(selected.startTime),
+          preferredDate: selected!.date,
+          preferredTimeSlot: formatTime(selected!.startTime),
           preliminaryComplaint: complaint || undefined,
         }
       });
@@ -123,61 +144,91 @@ export function BookFlow({ bookingType }: Props) {
       <Progress value={(step / 4) * 100} className="h-1.5 mb-6" />
       <ErrorMessage message={error} />
 
-      {hasActiveBooking && step !== 4 && (
+      {/* Block if patient already has an active booking */}
+      {patientQ.data?.hasActiveBooking && step !== 4 && (
         <Card className="p-6 mb-6 bg-destructive/10 text-destructive border-destructive/20">
-          <h2 className="font-bold text-lg mb-2">تنبيه: يوجد حجز نشط</h2>
-          <p>لا يمكنك حجز موعد جديد حالياً لأن لديك حجز قيد الانتظار أو أنت قيد العلاج في عيادة أخرى. يرجى إتمام حجزك الحالي أو إالغائه أولاً.</p>
+          <h2 className="font-bold text-lg mb-2">{t("booking.activeBookingTitle", "تنبيه: يوجد حجز نشط")}</h2>
+          <p>{t("booking.activeBookingDesc", "لا يمكنك حجز موعد جديد حالياً لأن لديك حجز قيد الانتظار أو أنت قيد العلاج في عيادة أخرى. يرجى إتمام حجزك الحالي أو إلغائه أولاً.")}</p>
+          <Button variant="outline" className="mt-4" onClick={() => navigate("/patient/dashboard")}>
+            {t("common.home")}
+          </Button>
         </Card>
       )}
 
-      {step === 1 && !hasActiveBooking && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
-          <h2 className="font-bold flex items-center gap-2"><Calendar className="h-5 w-5" /> {t("booking.selectSlot")}</h2>
-          {grouped.length === 0 ? (
-            <Card className="p-10 text-center text-muted-foreground">{t("common.noData")}</Card>
-          ) : (
-            grouped.map(([date, daySlots]) => (
-              <Card key={date} className="p-4">
-                <div className="font-bold text-primary mb-3">{formatDate(date, lang)}</div>
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                  {daySlots.map((s) => {
-                    const available = bookingType === 1 ? s.availableNewSlots : s.availableFollowUpSlots;
-                    const isFull = !s.isAvailable || available <= 0;
-                    return (
-                      <button
-                        key={s.sessionId}
-                        type="button"
-                        disabled={isFull}
-                        onClick={() => { setSelected(s); setStep(2); }}
-                        className={cn(
-                          "rounded-lg border-2 p-3 text-start transition-all",
-                          isFull
-                            ? "border-border bg-muted/40 opacity-60 cursor-not-allowed"
-                            : "border-border hover:border-primary hover:bg-primary/5 cursor-pointer"
-                        )}
-                      >
-                        <div className="flex items-center gap-1.5 font-semibold">
-                          <Clock className="h-4 w-4 text-primary" />
-                          <span dir="ltr">{formatSessionRange(s.startTime, s.endTime, lang)}</span>
-                        </div>
-                        {isFull ? (
-                          <Badge variant="outline" className="mt-2 bg-destructive/10 text-destructive border-destructive/20">
-                            {t("booking.full")}
-                          </Badge>
-                        ) : (
-                          <div className="text-xs text-muted-foreground mt-1">
-                            {available} {t("booking.available")}
-                          </div>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              </Card>
-            ))
+      {/* Block if booking type doesn't match patient state */}
+      {!patientQ.data?.hasActiveBooking && step !== 4 && (
+        <>
+          {bookingType === 1 && patientQ.data?.hasActiveCase && (
+            <Card className="p-6 mb-6 bg-info/10 text-info border-info/20">
+              <h2 className="font-bold text-lg mb-2">{t("booking.activeCaseTitle", "تنبيه: لديك حالة متابعة")}</h2>
+              <p>{t("booking.activeCaseDesc", "لديك حالة علاجية قائمة بالفعل. يرجى استخدام خيار 'حجز متابعة' بدلاً من حجز موعد جديد لتكملة علاجك.")}</p>
+              <Button variant="outline" className="mt-4 border-info/30 text-info hover:bg-info/10" onClick={() => navigate("/booking/followup")}>
+                {t("booking.followUpAppointment")}
+              </Button>
+            </Card>
           )}
-        </motion.div>
+
+          {bookingType === 2 && !patientQ.data?.hasActiveCase && (
+            <Card className="p-6 mb-6 bg-info/10 text-info border-info/20">
+              <h2 className="font-bold text-lg mb-2">{t("booking.noActiveCaseTitle", "تنبيه: لا توجد حالات متابعة")}</h2>
+              <p>{t("booking.noActiveCaseDesc", "ليس لديك حالات علاجية قائمة حالياً تتطلب متابعة. يرجى حجز موعد جديد للفحص.")}</p>
+              <Button variant="outline" className="mt-4 border-info/30 text-info hover:bg-info/10" onClick={() => navigate("/booking/new")}>
+                {t("booking.newAppointment")}
+              </Button>
+            </Card>
+          )}
+        </>
       )}
+
+      {step === 1 && !patientQ.data?.hasActiveBooking && (
+        (bookingType === 1 ? !patientQ.data?.hasActiveCase : patientQ.data?.hasActiveCase) && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
+            <h2 className="font-bold flex items-center gap-2"><Calendar className="h-5 w-5" /> {t("booking.selectSlot")}</h2>
+            {grouped.length === 0 ? (
+              <Card className="p-10 text-center text-muted-foreground">{t("common.noData")}</Card>
+            ) : (
+              grouped.map(([date, daySlots]) => (
+                <Card key={date} className="p-4">
+                  <div className="font-bold text-primary mb-3">{formatDate(date, lang)}</div>
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                    {daySlots.map((s) => {
+                      const available = bookingType === 1 ? s.availableNewSlots : s.availableFollowUpSlots;
+                      const isFull = !s.isAvailable || available <= 0;
+                      return (
+                        <button
+                          key={s.sessionId}
+                          type="button"
+                          disabled={isFull}
+                          onClick={() => { setSelected(s); setStep(2); }}
+                          className={cn(
+                            "rounded-lg border-2 p-3 text-start transition-all",
+                            isFull
+                              ? "border-border bg-muted/40 opacity-60 cursor-not-allowed"
+                              : "border-border hover:border-primary hover:bg-primary/5 cursor-pointer"
+                          )}
+                        >
+                          <div className="flex items-center gap-1.5 font-semibold">
+                            <Clock className="h-4 w-4 text-primary" />
+                            <span dir="ltr">{formatSessionRange(s.startTime, s.endTime, lang)}</span>
+                          </div>
+                          {isFull ? (
+                            <Badge variant="outline" className="mt-2 bg-destructive/10 text-destructive border-destructive/20">
+                              {t("booking.full")}
+                            </Badge>
+                          ) : (
+                            <div className="text-xs text-muted-foreground mt-1">
+                              {available} {t("booking.available")}
+                            </div>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </Card>
+              ))
+            )}
+          </motion.div>
+        ))}
 
       {step === 2 && selected && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
@@ -233,7 +284,7 @@ export function BookFlow({ bookingType }: Props) {
             </div>
             <h2 className="text-2xl font-bold mb-2">{t("booking.success")}</h2>
             <p className="text-muted-foreground mb-6">{t("booking.keepCode")}</p>
-            
+
             {createdBooking.clinicName && (
               <div className="mb-6 p-4 bg-primary/5 rounded-lg border border-primary/10">
                 <div className="text-sm text-muted-foreground mb-1">{t("booking.clinic")}</div>
