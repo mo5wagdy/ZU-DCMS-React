@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
-import { Calendar, CheckCircle2, Clock, Loader2 } from "lucide-react";
+import { Calendar, CheckCircle2, Clock, Loader2, Printer } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -277,25 +277,90 @@ export function BookFlow({ bookingType }: Props) {
       )}
 
       {step === 4 && createdBooking && (
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
-          <Card className="p-10 text-center">
-            <div className="grid h-20 w-20 place-items-center rounded-full bg-success/10 text-success mx-auto mb-5">
-              <CheckCircle2 className="h-10 w-10" />
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-6">
+          
+          {/* Printable Ticket Area */}
+          <Card className="print-only border-2 border-dashed border-primary/30 p-8 text-center relative overflow-hidden">
+            {/* Background Logo Watermark (Optional decoration) */}
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none flex items-center justify-center">
+              <div className="w-64 h-64 bg-primary rounded-full blur-3xl"></div>
             </div>
-            <h2 className="text-2xl font-bold mb-2">{t("booking.success")}</h2>
-            <p className="text-muted-foreground mb-6">{t("booking.keepCode")}</p>
 
-            {createdBooking.clinicName && (
-              <div className="mb-6 p-4 bg-primary/5 rounded-lg border border-primary/10">
-                <div className="text-sm text-muted-foreground mb-1">{t("booking.clinic")}</div>
-                <div className="text-lg font-bold text-primary">{createdBooking.clinicName}</div>
+            <div className="relative z-10">
+              <div className="grid h-16 w-16 place-items-center rounded-full bg-success/10 text-success mx-auto mb-4 no-print">
+                <CheckCircle2 className="h-8 w-8" />
               </div>
-            )}
+              
+              <div className="hidden print:block mb-6">
+                <h1 className="text-2xl font-black text-primary">{t("app.name")}</h1>
+                <p className="text-sm text-muted-foreground">{t("app.faculty")}</p>
+              </div>
 
-            <div className="text-sm text-muted-foreground mb-1">{t("booking.yourCode")}</div>
-            <div className="text-4xl font-extrabold text-primary tracking-wider font-mono mb-8" dir="ltr">{createdBooking.bookingCode}</div>
-            <Button onClick={() => navigate("/patient/dashboard")}>{t("common.home")}</Button>
+              <h2 className="text-xl font-bold mb-6 no-print">{t("booking.success")}</h2>
+
+              <div className="bg-secondary/40 rounded-xl p-6 mb-6 space-y-4 text-start border border-border/50">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <div className="text-xs text-muted-foreground mb-1">{t("booking.patientName")}</div>
+                    <div className="font-semibold text-foreground">{createdBooking.patientName}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-muted-foreground mb-1">{t("booking.clinic")}</div>
+                    <div className="font-semibold text-primary">
+                      {bookingType === 1 ? t("booking.diagnosisClinic") : (createdBooking.clinicName || "-")}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-muted-foreground mb-1">{t("booking.appointmentTime")}</div>
+                    <div className="font-semibold text-foreground" dir="ltr">
+                      {formatDate(createdBooking.sessionDate, lang)}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-muted-foreground mb-1">{t("booking.time")}</div>
+                    <div className="font-semibold text-foreground" dir="ltr">
+                      {formatSessionRange(createdBooking.sessionStartTime, createdBooking.sessionEndTime, lang)}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-sm text-muted-foreground mb-2">{t("booking.yourCode")}</div>
+              <div className="text-5xl font-black text-primary tracking-widest font-mono mb-2" dir="ltr">
+                {createdBooking.bookingCode}
+              </div>
+              <div className="text-xs text-muted-foreground mb-8 print:mb-0">
+                {t("booking.keepCode")}
+              </div>
+            </div>
           </Card>
+
+          {/* Non-printable Actions and Alerts */}
+          <div className="no-print space-y-4">
+            <div className="bg-warning/10 border border-warning/20 rounded-lg p-4 text-warning-foreground text-sm leading-relaxed">
+              {t("booking.screenshotAlert")}
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button 
+                size="lg" 
+                className="flex-1 text-base h-12"
+                onClick={() => window.print()}
+              >
+                <Printer className="mr-2 h-5 w-5 rtl:ml-2 rtl:mr-0" />
+                {t("booking.printTicket")}
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="flex-1 h-12"
+                onClick={() => navigate("/patient/dashboard")}
+              >
+                {t("common.home")}
+              </Button>
+            </div>
+          </div>
+
         </motion.div>
       )}
     </div>

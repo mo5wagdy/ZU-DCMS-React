@@ -142,3 +142,32 @@
 html[dir="rtl"] .rtl-flip {
   transform: scaleX(-1);
 }
+
+/* Print Styles */
+@media print {
+  /* Hide everything not meant for printing */
+  body * {
+    visibility: hidden;
+  }
+  
+  .no-print, .no-print * {
+    display: none !important;
+  }
+
+  /* Only show elements with print-only class and their children */
+  .print-only, .print-only * {
+    visibility: visible;
+  }
+  
+  /* Absolute position to place it at top-left of paper */
+  .print-only {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    box-shadow: none !important;
+    border: none !important;
+  }
+}

@@ -131,6 +131,8 @@ export interface BookingDto {
   sessionStartTime: string;
   sessionEndTime: string;
   clinicName?: string;
+  hasDiagnosisRecord?: boolean;
+  hasCaseAssignment?: boolean;
 }
 
 export interface CreateBookingDto {

@@ -177,9 +177,10 @@ export default function PatientDashboard() {
           {items.map((b) => {
             const status = overrides[b.id] ?? b.status;
             const canCancel =
-              status === BookingStatus.Pending ||
-              status === BookingStatus.Confirmed ||
-              status === BookingStatus.Delayed;
+              (status === BookingStatus.Pending ||
+               status === BookingStatus.Confirmed ||
+               status === BookingStatus.Delayed) &&
+              !b.hasDiagnosisRecord;
             return (
               <Card key={b.id} className="p-5 card-hover">
                 <div className="flex flex-wrap items-center justify-between gap-3">

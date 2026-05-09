@@ -205,7 +205,7 @@ export default function ReviewCase() {
             <Field label={t("student.diagnosis")} value={lang === 'en' ? (data.diagnosisEn || data.diagnosis) : data.diagnosis} />
             <Field
               label={t("ta.student")}
-              value={data.assignedByInternName}
+              value={data.studentName}
             />
             <Field
               label={t("ta.totalSessions")}

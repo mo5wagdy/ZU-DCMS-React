@@ -198,7 +198,8 @@ function BookingRow({
   const canCancel =
     (status === BookingStatus.Pending ||
       status === BookingStatus.Confirmed ||
-      status === BookingStatus.Delayed);
+      status === BookingStatus.Delayed) &&
+    !booking.hasDiagnosisRecord;
 
   return (
     <Card>
