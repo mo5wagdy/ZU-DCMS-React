@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
@@ -38,6 +38,50 @@ export function BookFlow({ bookingType }: Props) {
   const [selected, setSelected] = useState<AvailableSlotDto | null>(null);
   const [complaint, setComplaint] = useState("");
   const [createdBooking, setCreatedBooking] = useState<BookingDto | null>(null);
+  const ticketRef = useRef<HTMLDivElement>(null);
+
+  const handlePrint = useCallback(() => {
+    if (!ticketRef.current) return;
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      window.print();
+      return;
+    }
+    const dir = document.documentElement.dir || "ltr";
+    const fontFamily = dir === "rtl" ? "Cairo, system-ui, sans-serif" : "Inter, system-ui, sans-serif";
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html dir="${dir}">
+      <head>
+        <meta charset="utf-8" />
+        <title>${t("booking.yourCode")}</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet" />
+        <style>
+          * { box-sizing: border-box; margin: 0; padding: 0; }
+          body { font-family: ${fontFamily}; padding: 32px; color: #1E293B; }
+          .ticket { border: 2px dashed #1B3A6B44; border-radius: 12px; padding: 32px; text-align: center; max-width: 600px; margin: auto; }
+          .header h1 { color: #1B3A6B; font-size: 20px; margin-bottom: 4px; }
+          .header p { color: #64748B; font-size: 13px; margin-bottom: 20px; }
+          .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; background: #F1F5F9; border-radius: 10px; padding: 20px; margin-bottom: 24px; text-align: ${dir === "rtl" ? "right" : "left"}; }
+          .info-grid .label { font-size: 11px; color: #64748B; margin-bottom: 4px; }
+          .info-grid .value { font-size: 14px; font-weight: 600; color: #1E293B; }
+          .info-grid .value.primary { color: #1B3A6B; }
+          .code-label { font-size: 13px; color: #64748B; margin-bottom: 8px; }
+          .code { font-size: 36px; font-weight: 900; color: #1B3A6B; letter-spacing: 4px; font-family: monospace; margin-bottom: 8px; direction: ltr; }
+          .keep { font-size: 11px; color: #64748B; }
+          @media print { body { padding: 0; } .ticket { border: 2px dashed #ccc; } }
+        </style>
+      </head>
+      <body>
+        ${ticketRef.current.innerHTML}
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => { printWindow.print(); printWindow.close(); }, 400);
+  }, [t, createdBooking]);
 
   const patientQ = useFetch(
     () => (userId ? patientApi.byUserId(userId) : Promise.resolve(null as never)),
@@ -281,24 +325,13 @@ export function BookFlow({ bookingType }: Props) {
           
           {/* Printable Ticket Area */}
           <Card className="print-only border-2 border-dashed border-primary/30 p-8 text-center relative overflow-hidden">
-            {/* Background Logo Watermark (Optional decoration) */}
-            <div className="absolute inset-0 opacity-[0.03] pointer-events-none flex items-center justify-center">
-              <div className="w-64 h-64 bg-primary rounded-full blur-3xl"></div>
-            </div>
-
-            <div className="relative z-10">
-              <div className="grid h-16 w-16 place-items-center rounded-full bg-success/10 text-success mx-auto mb-4 no-print">
-                <CheckCircle2 className="h-8 w-8" />
-              </div>
-              
-              <div className="hidden print:block mb-6">
+            <div ref={ticketRef} className="ticket">
+              <div className="header">
                 <h1 className="text-2xl font-black text-primary">{t("app.name")}</h1>
                 <p className="text-sm text-muted-foreground">{t("app.faculty")}</p>
               </div>
 
-              <h2 className="text-xl font-bold mb-6 no-print">{t("booking.success")}</h2>
-
-              <div className="bg-secondary/40 rounded-xl p-6 mb-6 space-y-4 text-start border border-border/50">
+              <div className="info-grid bg-secondary/40 rounded-xl p-6 mb-6 space-y-4 text-start border border-border/50">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <div className="text-xs text-muted-foreground mb-1">{t("booking.patientName")}</div>
@@ -312,24 +345,24 @@ export function BookFlow({ bookingType }: Props) {
                   </div>
                   <div>
                     <div className="text-xs text-muted-foreground mb-1">{t("booking.appointmentTime")}</div>
-                    <div className="font-semibold text-foreground" dir="ltr">
+                    <div className="font-semibold text-foreground">
                       {formatDate(createdBooking.sessionDate, lang)}
                     </div>
                   </div>
                   <div>
                     <div className="text-xs text-muted-foreground mb-1">{t("booking.time")}</div>
-                    <div className="font-semibold text-foreground" dir="ltr">
+                    <div className="font-semibold text-foreground">
                       {formatSessionRange(createdBooking.sessionStartTime, createdBooking.sessionEndTime, lang)}
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="text-sm text-muted-foreground mb-2">{t("booking.yourCode")}</div>
-              <div className="text-5xl font-black text-primary tracking-widest font-mono mb-2" dir="ltr">
+              <div className="code-label text-sm text-muted-foreground mb-2">{t("booking.yourCode")}</div>
+              <div className="code text-5xl font-black text-primary tracking-widest font-mono mb-2" dir="ltr">
                 {createdBooking.bookingCode}
               </div>
-              <div className="text-xs text-muted-foreground mb-8 print:mb-0">
+              <div className="keep text-xs text-muted-foreground mb-8 print:mb-0">
                 {t("booking.keepCode")}
               </div>
             </div>
@@ -337,7 +370,7 @@ export function BookFlow({ bookingType }: Props) {
 
           {/* Non-printable Actions and Alerts */}
           <div className="no-print space-y-4">
-            <div className="bg-warning/10 border border-warning/20 rounded-lg p-4 text-warning-foreground text-sm leading-relaxed">
+            <div className="bg-amber-50 text-amber-900 border border-amber-200 dark:bg-amber-500/10 dark:text-amber-200 dark:border-amber-500/20 rounded-lg p-4 text-sm leading-relaxed font-semibold shadow-sm">
               {t("booking.screenshotAlert")}
             </div>
 
@@ -345,7 +378,7 @@ export function BookFlow({ bookingType }: Props) {
               <Button 
                 size="lg" 
                 className="flex-1 text-base h-12"
-                onClick={() => window.print()}
+                onClick={handlePrint}
               >
                 <Printer className="mr-2 h-5 w-5 rtl:ml-2 rtl:mr-0" />
                 {t("booking.printTicket")}

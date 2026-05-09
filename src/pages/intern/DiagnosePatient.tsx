@@ -147,12 +147,7 @@ export default function DiagnosePatient() {
       </div>
 
       {/* Stepper */}
-      <div className="flex items-center gap-2 mb-6">
-        <StepBadge active={!diagnosis} done={!!diagnosis} number={1} label={t("intern.step1")} />
-        <div className="h-px flex-1 bg-border" />
-        <StepBadge active={!!diagnosis} done={false} number={2} label={t("intern.step2")} />
-      </div>
-
+      {/* Removed Step Badge since it's only one step now */}
       {!diagnosis ? (
         <Card>
           <CardHeader>
@@ -257,10 +252,18 @@ export default function DiagnosePatient() {
           </CardContent>
         </Card>
       ) : (
-        <AssignStudentPanel
-          diagnosis={diagnosis}
-          onDone={() => navigate("/intern/dashboard")}
-        />
+        <Card className="p-10 text-center">
+          <div className="grid h-16 w-16 place-items-center rounded-full bg-success/10 text-success mx-auto mb-4">
+            <CheckCircle2 className="h-8 w-8" />
+          </div>
+          <h2 className="text-xl font-bold mb-2">{t("intern.diagnosisSaved")}</h2>
+          <p className="text-muted-foreground mb-6">
+            {t("intern.autoAssignNote")}
+          </p>
+          <Button onClick={() => navigate("/intern/dashboard")}>
+            {t("intern.backToDashboard")}
+          </Button>
+        </Card>
       )}
     </div>
   );

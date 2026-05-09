@@ -186,7 +186,9 @@
     "completedCases": "Completed cases",
     "priority": "Priority",
     "available": "Available",
-    "fullyBooked": "Requirements complete"
+    "fullyBooked": "Requirements complete",
+    "autoAssignNote": "Diagnosis saved successfully. The system will automatically assign the most suitable student.",
+    "backToDashboard": "Back to Dashboard"
   },
   "student": {
     "dashboard": "Student Dashboard",
@@ -706,5 +708,14 @@
   "رقم تليفون غير صحيح": "Invalid phone number",
   "تاريخ ميلاد غير صحيح": "Invalid date of birth",
   "الصيغة: الدولة,المحافظة": "Format: Country, Governorate",
-  "الرقم القومي المصري يجب أن يكون 14 رقم صحيح": "National ID must be exactly 14 digits"
+  "الرقم القومي المصري يجب أن يكون 14 رقم صحيح": "National ID must be exactly 14 digits",
+  "المريض ليس لديه حجز (متابعة أو جديد) مسجل لهذا اليوم. يجب على المريض حجز موعد أولاً.": "The patient does not have a registered booking (follow-up or new) for today. The patient must book an appointment first.",
+  "Case assignment not found.": "Case assignment not found.",
+  "Student not found.": "Student not found.",
+  "Booking not found": "Booking not found",
+  "This patient has already been diagnosed": "This patient has already been diagnosed",
+  "Intern doctor not found": "Intern doctor not found",
+  "Diagnosis type not found": "Diagnosis type not found",
+  "Diagnosis type does not belong to this clinic": "Diagnosis type does not belong to this clinic",
+  "Clinic not found or inactive": "Clinic not found or inactive"
 }
