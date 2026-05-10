@@ -224,6 +224,7 @@
     "sessionsCount": "عدد الجلسات",
     "sessionsHistory": "سجل الجلسات",
     "noSessions": "لا توجد جلسات بعد",
+    "internNotes": "ملاحظات طبيب الامتياز",
     "completed": "مكتمل",
     "transferred": "محول",
     "required": "مطلوب",
@@ -242,6 +243,8 @@
     "startSession": "بدء الجلسة"
   },
   "ta": {
+    "alreadyReviewed": "تم مراجعة هذا التعيين بالفعل",
+    "backToDashboard": "العودة للوحة التحكم",
     "dashboard": "لوحة المعيد",
     "pendingReviews": "المراجعات المعلقة",
     "review": "مراجعة",

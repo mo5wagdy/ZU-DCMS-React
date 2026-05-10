@@ -370,7 +370,8 @@ export interface SystemConfigDto {
 
 export interface ClinicDto {
   id: number;
-  name: string;
+  name: string;      // Arabic name
+  nameEn?: string;   // English name
   code: string;
   minAcademicYear: number;
   maxAcademicYear: number;

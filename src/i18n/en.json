@@ -223,6 +223,7 @@
     "sessionsCount": "Sessions",
     "sessionsHistory": "Sessions History",
     "noSessions": "No sessions yet",
+    "internNotes": "Intern doctor notes",
     "completed": "Completed",
     "transferred": "Transferred",
     "required": "Required",
@@ -238,6 +239,8 @@
     "ofRequired": "of {{total}}"
   },
   "ta": {
+    "alreadyReviewed": "This assignment has already been reviewed",
+    "backToDashboard": "Back to dashboard",
     "dashboard": "TA Dashboard",
     "pendingReviews": "Pending Reviews",
     "review": "Review",

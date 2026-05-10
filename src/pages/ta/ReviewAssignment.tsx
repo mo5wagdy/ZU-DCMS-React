@@ -1,18 +1,20 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ClipboardCheck, ArrowRight, UserCheck, AlertTriangle, RefreshCcw } from "lucide-react";
+import { ClipboardCheck, ArrowRight, UserCheck, AlertTriangle, RefreshCcw, CheckCircle2, XCircle, Clock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { ErrorMessage } from "@/components/shared/ErrorMessage";
+import { StatusBadge } from "@/components/shared/StatusBadge";
 import { caseApi } from "@/api/case.api";
 import { useAuthStore } from "@/store/auth.store";
 import { useUIStore } from "@/store/ui.store";
 import { useFetch } from "@/hooks/useFetch";
 import { formatDate } from "@/utils/format";
+import { CaseStatus } from "@/utils/enum";
 import { toast } from "sonner";
 
 export default function ReviewAssignment() {
@@ -53,7 +55,10 @@ export default function ReviewAssignment() {
       });
       
       toast.success(t("ta.assignmentReviewedSuccess", "تمت مراجعة التعيين بنجاح"));
-      navigate("/ta");
+      // Bug 4: trigger global refresh so student list updates immediately
+      useUIStore.getState().triggerRefresh();
+      // Bug 1: was navigating to "/ta" which doesn't exist
+      navigate("/ta/dashboard");
     } catch (err: any) {
       toast.error(err.message || "Network error");
     } finally {
@@ -68,6 +73,9 @@ export default function ReviewAssignment() {
     </div>
   );
 
+  // Bug 3: if already reviewed, show read-only view without action buttons
+  const isPending = assignment.status === CaseStatus.PendingAssignmentApproval;
+
   return (
     <div className="container py-8 max-w-3xl space-y-6">
       <div className="flex items-center gap-4">
@@ -77,6 +85,7 @@ export default function ReviewAssignment() {
         <div className="flex-1">
           <h1 className="text-2xl font-bold">{t("ta.reviewAssignment", "مراجعة التعيين المبدئي")}</h1>
         </div>
+        <StatusBadge type="case" value={assignment.status} />
       </div>
 
       <Card>
@@ -117,48 +126,75 @@ export default function ReviewAssignment() {
             </div>
           </div>
 
-          <div className="space-y-3 pt-4 border-t border-border">
-            <h3 className="font-medium">{t("ta.reviewNotes", "ملاحظات المراجعة (إلزامية في حالة الرفض أو التحويل)")}</h3>
-            <Textarea
-              placeholder={t("ta.writeReviewNotes", "اكتب ملاحظاتك هنا...")}
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              rows={4}
-              className="resize-none"
-            />
-          </div>
+          {/* Bug 3: Show action buttons only if still pending, otherwise show reviewed status */}
+          {isPending ? (
+            <>
+              <div className="space-y-3 pt-4 border-t border-border">
+                <h3 className="font-medium">{t("ta.reviewNotes", "ملاحظات المراجعة (إلزامية في حالة الرفض أو التحويل)")}</h3>
+                <Textarea
+                  placeholder={t("ta.writeReviewNotes", "اكتب ملاحظاتك هنا...")}
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  rows={4}
+                  className="resize-none"
+                />
+              </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 pt-4">
-            <Button
-              className="flex-1"
-              variant="default"
-              onClick={() => handleAction("Approve")}
-              disabled={submitting}
-            >
-              <ClipboardCheck className="h-4 w-4 me-2" />
-              {t("ta.approveAssignment", "الموافقة وبدء العلاج")}
-            </Button>
-            
-            <Button
-              className="flex-1"
-              variant="destructive"
-              onClick={() => handleAction("Escalate")}
-              disabled={submitting}
-            >
-              <AlertTriangle className="h-4 w-4 me-2" />
-              {t("ta.escalateToSpecialist", "تصعيد لعيادة متخصصة")}
-            </Button>
-            
-            <Button
-              className="flex-1"
-              variant="outline"
-              onClick={() => handleAction("Transfer")}
-              disabled={submitting}
-            >
-              <RefreshCcw className="h-4 w-4 me-2" />
-              {t("ta.transferToIntern", "إرجاع لعيادة الامتياز")}
-            </Button>
-          </div>
+              <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                <Button
+                  className="flex-1"
+                  variant="default"
+                  onClick={() => handleAction("Approve")}
+                  disabled={submitting}
+                >
+                  <ClipboardCheck className="h-4 w-4 me-2" />
+                  {t("ta.approveAssignment", "الموافقة وبدء العلاج")}
+                </Button>
+                
+                <Button
+                  className="flex-1"
+                  variant="destructive"
+                  onClick={() => handleAction("Escalate")}
+                  disabled={submitting}
+                >
+                  <AlertTriangle className="h-4 w-4 me-2" />
+                  {t("ta.escalateToSpecialist", "تصعيد لعيادة متخصصة")}
+                </Button>
+                
+                <Button
+                  className="flex-1"
+                  variant="outline"
+                  onClick={() => handleAction("Transfer")}
+                  disabled={submitting}
+                >
+                  <RefreshCcw className="h-4 w-4 me-2" />
+                  {t("ta.transferToIntern", "إرجاع لعيادة الامتياز")}
+                </Button>
+              </div>
+            </>
+          ) : (
+            /* Read-only: already reviewed */
+            <div className="pt-4 border-t border-border">
+              <div className="flex items-center gap-3 rounded-lg bg-muted/40 p-4">
+                {assignment.status === CaseStatus.InProgress ? (
+                  <CheckCircle2 className="h-5 w-5 text-success flex-shrink-0" />
+                ) : assignment.status === CaseStatus.EscalatedToSpecialist || assignment.status === CaseStatus.TransferredToIntern ? (
+                  <XCircle className="h-5 w-5 text-destructive flex-shrink-0" />
+                ) : (
+                  <Clock className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                )}
+                <div>
+                  <p className="font-medium text-sm">{t("ta.alreadyReviewed", "تم مراجعة هذا التعيين بالفعل")}</p>
+                  {assignment.notes && (
+                    <p className="text-xs text-muted-foreground mt-1">{assignment.notes}</p>
+                  )}
+                </div>
+              </div>
+              <Button variant="outline" className="mt-4 w-full" onClick={() => navigate("/ta/dashboard")}>
+                {t("ta.backToDashboard", "العودة للوحة التحكم")}
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

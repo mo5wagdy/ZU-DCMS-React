@@ -174,7 +174,7 @@ export default function DiagnosePatient() {
                   <SelectContent>
                     {clinics.filter(c => c.id !== 1).map((c) => (
                       <SelectItem key={c.id} value={String(c.id)}>
-                        {c.name}
+                        {lang === 'en' ? (c.nameEn || c.name) : c.name}
                       </SelectItem>
                     ))}
                   </SelectContent>

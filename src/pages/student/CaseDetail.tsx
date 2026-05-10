@@ -184,9 +184,10 @@ export default function CaseDetail() {
             <Field label={t("student.assignedBy")} value={data.assignedByInternName} />
             <Field label={t("student.assignedAt")} value={formatDate(data.assignedAt, lang)} />
           </div>
+          {/* Bug 5: Show intern/TA notes (notes) and patient preliminary complaint separately */}
           {data.notes && (
             <div className="mt-4 rounded-lg bg-muted/40 p-3 text-sm">
-              <div className="text-xs text-muted-foreground mb-1">{t("intern.notes")}</div>
+              <div className="text-xs text-muted-foreground mb-1">{t("student.internNotes", "ملاحظات طبيب الامتياز")}</div>
               <div>{data.notes}</div>
             </div>
           )}
@@ -298,7 +299,8 @@ function SessionAccordion({
             <p className="text-sm text-muted-foreground">{t("student.noProcedures")}</p>
           ) : (
             <div className="flex flex-wrap gap-1.5">
-              {(lang === 'en' ? (session.proceduresNamesEn || session.proceduresNames) : session.proceduresNames).map((p, i) => (
+              {/* Bug 6B: show English procedure names when in English mode */}
+              {(lang === 'en' ? (session.proceduresNamesEn?.length ? session.proceduresNamesEn : session.proceduresNames) : session.proceduresNames).map((p, i) => (
                 <Badge key={i} variant="secondary" className="text-xs">
                   {p}
                 </Badge>
@@ -414,7 +416,9 @@ function AddSessionDialog({
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{t("student.addSession")}</DialogTitle>
-          <DialogDescription>{caseAssignment.clinicName}</DialogDescription>
+          <DialogDescription>
+            {i18n.language === 'en' ? (caseAssignment.clinicNameEn || caseAssignment.clinicName) : caseAssignment.clinicName}
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -439,7 +443,7 @@ function AddSessionDialog({
                       checked={selected.includes(p.id)}
                       onCheckedChange={() => toggle(p.id)}
                     />
-                    <span className="text-sm">{p.nameAr}</span>
+                    <span className="text-sm">{i18n.language === 'en' ? p.nameEn : p.nameAr}</span>
                   </label>
                 ))}
               </div>
@@ -450,7 +454,15 @@ function AddSessionDialog({
             <Label htmlFor="completed" className="cursor-pointer">
               {t("student.isCompleted")}
             </Label>
-            <Switch id="completed" checked={isCompleted} onCheckedChange={setIsCompleted} />
+            {/* Bug 7: reset hasFollowUp when isCompleted is enabled */}
+            <Switch
+              id="completed"
+              checked={isCompleted}
+              onCheckedChange={(v) => {
+                setIsCompleted(v);
+                if (v) setHasFollowUp(false);
+              }}
+            />
           </div>
 
           {!isCompleted && (
