@@ -184,9 +184,16 @@ export default function CaseDetail() {
             <Field label={t("student.assignedBy")} value={data.assignedByInternName} />
             <Field label={t("student.assignedAt")} value={formatDate(data.assignedAt, lang)} />
           </div>
-          {/* Bug 5: Show intern/TA notes (notes) and patient preliminary complaint separately */}
-          {data.notes && (
-            <div className="mt-4 rounded-lg bg-muted/40 p-3 text-sm">
+          {/* Patient Complaint */}
+          {data.patientComplaint && (
+            <div className="mt-4 rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm">
+              <div className="text-xs font-semibold text-primary mb-1">{t("student.patientComplaint", "شكوى المريض")}</div>
+              <div>{data.patientComplaint}</div>
+            </div>
+          )}
+          {/* Intern/TA notes, hidden if just the auto-assigned text */}
+          {data.notes && data.notes !== "Auto-assigned - Pending TA Review" && (
+            <div className="mt-3 rounded-lg bg-muted/40 p-3 text-sm">
               <div className="text-xs text-muted-foreground mb-1">{t("student.internNotes", "ملاحظات طبيب الامتياز")}</div>
               <div>{data.notes}</div>
             </div>

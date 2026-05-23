@@ -159,7 +159,7 @@ export default function StudentDashboard() {
                     className="rounded-lg border border-border/60 bg-muted/30 p-2.5"
                   >
                     <div className="text-xs text-muted-foreground truncate">
-                      {r.clinicName}
+                      {lang === 'en' ? (r.requirementTypeNameEn || r.clinicNameEn || r.clinicName) : (r.requirementTypeName || r.clinicName)}
                     </div>
                     <div className="text-sm font-semibold tabular-nums">
                       {r.completedCount}/{r.requiredCount}

@@ -116,6 +116,12 @@ export default function ReviewAssignment() {
               <p className="text-sm text-muted-foreground">{t("student.diagnosis")}</p>
               <p className="font-medium">{lang === 'en' ? (assignment.diagnosisEn || assignment.diagnosis) : assignment.diagnosis}</p>
             </div>
+            {assignment.patientComplaint && (
+              <div className="md:col-span-2">
+                <p className="text-sm text-muted-foreground">{t("student.patientComplaint", "شكوى المريض")}</p>
+                <p className="font-medium bg-muted/30 p-2 rounded-md mt-1">{assignment.patientComplaint}</p>
+              </div>
+            )}
             <div>
               <p className="text-sm text-muted-foreground">{t("ta.assignedBy", "تم التعيين بواسطة")}</p>
               <p className="font-medium">{assignment.assignedByInternName}</p>

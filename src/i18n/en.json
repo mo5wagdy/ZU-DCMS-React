@@ -224,6 +224,7 @@
     "sessionsHistory": "Sessions History",
     "noSessions": "No sessions yet",
     "internNotes": "Intern doctor notes",
+    "patientComplaint": "Patient complaint",
     "completed": "Completed",
     "transferred": "Transferred",
     "required": "Required",
@@ -236,7 +237,10 @@
     "noProcedures": "No procedures",
     "termComplete": "Term requirements completed 🎉",
     "overall": "Overall",
-    "ofRequired": "of {{total}}"
+    "ofRequired": "of {{total}}",
+    "todayQueue": "Today's Patients Queue",
+    "noQueueToday": "No patients in your queue today",
+    "startSession": "Start Session"
   },
   "ta": {
     "alreadyReviewed": "This assignment has already been reviewed",

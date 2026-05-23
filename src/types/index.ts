@@ -240,6 +240,7 @@ export interface StudentPriorityDto {
 export interface CaseAssignmentDto {
   id: number;
   patientName: string;
+  patientComplaint?: string;
   clinicId: number;
   clinicName: string;      // Arabic
   clinicNameEn: string;    // English
